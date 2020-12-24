@@ -1,0 +1,28 @@
+{
+  "name": "libfalanx",
+  "version": "1.0.0",
+  "description": "falanx byzantine broadcast protocol",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Grivn/libfalanx.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Grivn/libfalanx/issues"
+  },
+  "homepage": "https://github.com/Grivn/libfalanx#readme",
+  "devDependencies": {
+    "cz-conventional-changelog": "^3.3.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
