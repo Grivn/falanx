@@ -1,33 +1,30 @@
 package types
 
 import (
-	cTypes "github.com/Grivn/libfalanx/common/types"
+	"github.com/Grivn/libfalanx/common"
+	"github.com/Grivn/libfalanx/logger"
 )
 
-type Transaction struct {
-	Hash    string
-	Content cTypes.Transaction
+// Config is used to initiate the instance in sequence pool
+type Config struct {
+	Author uint64
+
+	TimeoutC chan interface{}
+	LocalBAC chan interface{}
+
+	Tools  common.Tools
+	Logger logger.Logger
 }
 
-type OrderedRequest struct {
-	Sequence   uint64
-	TxHashList []string
-}
-
-type OrderedLog struct {
-	Sequence uint64
-	TxHash   string
-}
-
-type ReplicaRecorder struct {
-	Author cTypes.Author
-
-	OrderMap map[uint64]string
-
-	MaxID uint64
-}
-
+// TxRecorder is used to describe the major information to make order for certain transaction
 type TxRecorder struct {
-	Transaction *cTypes.Transaction
-	OrderedReplicas []cTypes.Author
+	TxHash          string
+	OrderedReplicas []uint64
+	Candidates      []uint64
+}
+
+// TimeoutEvent is used to process local ba progress
+type TimeoutEvent struct {
+	// TxHash is used to track the particular transaction waiting for quorum candidates
+	TxHash string
 }

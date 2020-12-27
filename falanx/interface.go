@@ -1,6 +1,6 @@
-package kernel
+package falanx
 
-type FalanxKernel interface {
+type Kernel interface {
 	// Start starts a Falanx node instance.
 	Start() error
 	// Stop performs any necessary termination of the Node.

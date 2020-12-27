@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package protos;
+
+message ordered_log {
+  uint64 sequence = 1;
+  string tx_hash = 2;
+  int64 timestamp = 3;
+}
+
+message ordered_req {
+  uint64 client_id = 1;
+  uint64 sequence = 2;
+  repeated string tx_hash_list = 3;
+  int64 timestamp = 4;
+}
+
+message suspect {
+  uint64 replica_id = 1;
+  uint64 malice_id = 2;
+}
+
+message reply {
+  uint64 replica_id = 1;
+  uint64 client_id = 2;
+  string tx_hash = 3;
+  bytes result = 4;
+}

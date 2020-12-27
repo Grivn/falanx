@@ -1,4 +1,4 @@
-# Falanx: sequence pool
+# Falanx: sequence list
 ## Introduction
 序列池，用于保存来自共识节点或客户端的日志，并进行日志序列的维护
 ## Component
@@ -20,8 +20,8 @@
 ### ordered log
 有序日志，日志以交易为粒度，其中包含：序号、交易
 - 序号（sequence）：每个节点的日志需要排序
-### transaction pool
-交易池，其中包含：交易、交易哈希、已排序节点、候选节点、超时计时器
+### transaction list
+交易池，维护了交易本身相关的性质，中包含：交易、交易哈希、已排序节点、候选节点、超时计时器
 - 交易（transaction）：单笔交易
 - 交易哈希（hash）：交易哈希取值，用作交易的标记
 - 已排序节点（ordered_replica）：已经对该交易进行排序的节点，使用list
