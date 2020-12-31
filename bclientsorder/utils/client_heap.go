@@ -3,7 +3,7 @@ package utils
 import (
 	"container/heap"
 
-	"github.com/Grivn/libfalanx/common/protos"
+	"github.com/Grivn/libfalanx/zcommon/protos"
 )
 
 // ================ CacheReq Interfaces ==================

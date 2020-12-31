@@ -1,7 +1,7 @@
 package network
 
 import (
-	"github.com/Grivn/libfalanx/common/protos"
+	"github.com/Grivn/libfalanx/zcommon/protos"
 
 	fCommonProto "github.com/ultramesh/flato-common/types/protos"
 )

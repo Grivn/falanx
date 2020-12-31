@@ -1,6 +1,9 @@
-package localba
+package dlocalba
 
-type BAEngine interface {
+type SimpleBA interface {
+	// Update
+	Update(txHash string)
+
 	// ElectCandidates is used to find a list of nodes to make finalization
 	ElectCandidates() []string
 

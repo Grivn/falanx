@@ -1,8 +1,10 @@
 package types
 
-import "github.com/Grivn/libfalanx/sequencepool"
+import (
+	"github.com/Grivn/libfalanx/atxcontainer"
+)
 
 type Config struct {
 	Author      uint64
-	TxContainer sequencepool.TxsContainer
+	TxContainer atxcontainer.TxsContainer
 }

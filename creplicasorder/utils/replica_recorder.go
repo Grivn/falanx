@@ -4,7 +4,7 @@ import (
 	"container/list"
 	"errors"
 
-	"github.com/Grivn/libfalanx/common/protos"
+	"github.com/Grivn/libfalanx/zcommon/protos"
 )
 
 type ReplicaRecorder interface {

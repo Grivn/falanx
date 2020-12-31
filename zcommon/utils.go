@@ -1,4 +1,4 @@
-package common
+package zcommon
 
 import (
 	"crypto/md5"

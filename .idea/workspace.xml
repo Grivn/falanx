@@ -11,37 +11,43 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8076577a-4287-45be-8e84-c500e465776e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/common/protos/falanx.pb.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/protos/falanx.proto" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fakeclient/client.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fakeclient/types/types.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/falanx/falanx_impl.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/falanx/types/types.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/logger/interface.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/client_order.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/local_seq.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/replica_order.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/sequence_pool_impl.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/sp_interface.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/timer.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/txs_container.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/utils/client_heap.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/utils/client_recorder.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/utils/replica_heap.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/utils/replica_recorder.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/atxcontainer/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/atxcontainer/txs_container.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/atxcontainer/txs_container_impl.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/atxcontainer/types/types.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bclientsorder/client_order.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/creplicasorder/replica_order.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/creplicasorder/replica_order_impl.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/creplicasorder/types/types.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dlocalba/simple_ba_impl.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/falanx/sequence_pool.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/types/types.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/types/types.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kernel/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/falanx/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kernel/event_processor.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kernel/falanx_smr.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kernel/interface.go" beforeDir="false" afterPath="$PROJECT_DIR$/falanx/interface.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/protos/falanx.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/zcommon/protos/falanx.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/protos/falanx.proto" beforeDir="false" afterPath="$PROJECT_DIR$/zcommon/protos/falanx.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/types/types.go" beforeDir="false" afterPath="$PROJECT_DIR$/zcommon/types/types.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/zcommon/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fakeclient/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/fakeclient/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fakeclient/types/types.go" beforeDir="false" afterPath="$PROJECT_DIR$/fakeclient/types/types.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/falanx/falanx_impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/falanx/falanx_impl.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/falanx/types/types.go" beforeDir="false" afterPath="$PROJECT_DIR$/falanx/types/types.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/localba/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/dlocalba/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/localba/ba_processor.go" beforeDir="false" afterPath="$PROJECT_DIR$/dlocalba/ba_processor.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/localba/interface.go" beforeDir="false" afterPath="$PROJECT_DIR$/dlocalba/interface.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/localba/types/types.go" beforeDir="false" afterPath="$PROJECT_DIR$/dlocalba/types/types.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/network/interface.go" beforeDir="false" afterPath="$PROJECT_DIR$/network/interface.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sequencepool/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/sequencepool/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sequencepool/errors.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sequencepool/interface.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sequencepool/log_list.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sequencepool/pool_processor.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sequencepool/types/types.go" beforeDir="false" afterPath="$PROJECT_DIR$/sequencepool/types/types.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sequencepool/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sequencepool/client_order.go" beforeDir="false" afterPath="$PROJECT_DIR$/bclientsorder/client_order_impl.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sequencepool/local_seq.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sequencepool/replica_order.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sequencepool/sequence_pool_impl.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sequencepool/sp_interface.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sequencepool/timer.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sequencepool/txs_container.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sequencepool/types/types.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sequencepool/utils/client_heap.go" beforeDir="false" afterPath="$PROJECT_DIR$/bclientsorder/utils/client_heap.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sequencepool/utils/client_recorder.go" beforeDir="false" afterPath="$PROJECT_DIR$/bclientsorder/utils/client_recorder.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sequencepool/utils/replica_heap.go" beforeDir="false" afterPath="$PROJECT_DIR$/creplicasorder/utils/replica_heap.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sequencepool/utils/replica_recorder.go" beforeDir="false" afterPath="$PROJECT_DIR$/creplicasorder/utils/replica_recorder.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,11 +85,11 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/sequencepool/utils" />
-      <recent name="$PROJECT_DIR$/sequencepool" />
-      <recent name="$PROJECT_DIR$/sequencepool/types" />
-      <recent name="$PROJECT_DIR$/kernel" />
-      <recent name="$PROJECT_DIR$/graphengine/types" />
+      <recent name="$PROJECT_DIR$/clients_order" />
+      <recent name="$PROJECT_DIR$/replicas_order" />
+      <recent name="$PROJECT_DIR$/replicas_order/utils" />
+      <recent name="$PROJECT_DIR$/clients_order/utils" />
+      <recent name="$PROJECT_DIR$/txcontainer" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />

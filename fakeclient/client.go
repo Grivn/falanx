@@ -3,8 +3,8 @@ package fakeclient
 import (
 	"time"
 
-	"github.com/Grivn/libfalanx/common"
-	"github.com/Grivn/libfalanx/common/protos"
+	"github.com/Grivn/libfalanx/zcommon"
+	"github.com/Grivn/libfalanx/zcommon/protos"
 	"github.com/Grivn/libfalanx/fakeclient/types"
 	"github.com/Grivn/libfalanx/logger"
 	"github.com/Grivn/libfalanx/network"
@@ -27,7 +27,7 @@ type clientImpl struct {
 
 	res map[string]map[uint64]bool
 
-	tools  common.Tools
+	tools  zcommon.Tools
 	sender network.Network
 	logger logger.Logger
 }

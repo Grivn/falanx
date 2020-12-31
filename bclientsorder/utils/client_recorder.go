@@ -1,6 +1,6 @@
 package utils
 
-import "github.com/Grivn/libfalanx/common/protos"
+import "github.com/Grivn/libfalanx/zcommon/protos"
 
 type ClientRecorder interface {
 	Counter() uint64

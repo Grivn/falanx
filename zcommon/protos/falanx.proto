@@ -3,9 +3,10 @@ syntax = "proto3";
 package protos;
 
 message ordered_log {
-  uint64 sequence = 1;
-  string tx_hash = 2;
-  int64 timestamp = 3;
+  uint64 replica_id = 1;
+  uint64 sequence = 2;
+  string tx_hash = 3;
+  int64 timestamp = 4;
 }
 
 message ordered_req {
