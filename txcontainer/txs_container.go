@@ -1,4 +1,4 @@
-package atxcontainer
+package txcontainer
 
 import fCommonProto "github.com/ultramesh/flato-common/types/protos"
 

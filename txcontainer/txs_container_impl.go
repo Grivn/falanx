@@ -1,9 +1,9 @@
-package atxcontainer
+package txcontainer
 
 import (
 	"errors"
 
-	"github.com/Grivn/libfalanx/atxcontainer/types"
+	"github.com/Grivn/libfalanx/txcontainer/types"
 	"github.com/Grivn/libfalanx/logger"
 	"github.com/Grivn/libfalanx/zcommon"
 

@@ -1,4 +1,4 @@
-package creplicasorder
+package replicasorder
 
 import "github.com/Grivn/libfalanx/zcommon/protos"
 

@@ -1,4 +1,4 @@
-package bclientsorder
+package clientsorder
 
 import (
 	"github.com/Grivn/libfalanx/zcommon/protos"

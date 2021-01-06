@@ -1,9 +1,9 @@
 package falanx
 
 import (
-	"github.com/Grivn/libfalanx/atxcontainer"
-	"github.com/Grivn/libfalanx/bclientsorder"
-	"github.com/Grivn/libfalanx/creplicasorder"
+	"github.com/Grivn/libfalanx/txcontainer"
+	"github.com/Grivn/libfalanx/clientsorder"
+	"github.com/Grivn/libfalanx/replicasorder"
 	"github.com/Grivn/libfalanx/logger"
 	"github.com/Grivn/libfalanx/zcommon"
 	"github.com/Grivn/libfalanx/zcommon/protos"
@@ -16,7 +16,7 @@ type orderedPool struct {
 	// container: store the transactions send from every client
 	//
 	// transactions set will be send into container directly
-	container atxcontainer.TxsContainer
+	container txcontainer.TxsContainer
 
 	// order =======================================================================
 	// clients:  receive the ordered requests from every client
@@ -25,8 +25,8 @@ type orderedPool struct {
 	// a ordered message only has a unique sequence number and hash value
 	// the transactions ordered in clients will be transferred into the replicas as local log
 	// the transactions matched target in replicas will be carried out to produce map
-	clients  map[uint64]bclientsorder.ClientOrder
-	replicas map[uint64]creplicasorder.ReplicaOrder
+	clients  map[uint64]clientsorder.ClientOrder
+	replicas map[uint64]replicasorder.ReplicaOrder
 
 	// channel =====================================================================
 	// transactionChan: transfer the transactions from client
@@ -104,7 +104,7 @@ func (o *orderedPool) processOrderedRequests(req *protos.OrderedReq) {
 	if !ok {
 		// initialization of client order for client with cid
 		orderedChan := make(chan string)
-		client = bclientsorder.NewClientOrder(cid, orderedChan, o.tools, o.logger)
+		client = clientsorder.NewClientOrder(cid, orderedChan, o.tools, o.logger)
 		o.orderedChan[cid] = orderedChan
 		o.clients[cid] = client
 		go o.listenOrderedChan(cid)

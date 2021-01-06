@@ -1,7 +1,7 @@
-package creplicasorder
+package replicasorder
 
 import (
-	"github.com/Grivn/libfalanx/creplicasorder/utils"
+	"github.com/Grivn/libfalanx/replicasorder/utils"
 	"github.com/Grivn/libfalanx/logger"
 	"github.com/Grivn/libfalanx/zcommon"
 	"github.com/Grivn/libfalanx/zcommon/protos"

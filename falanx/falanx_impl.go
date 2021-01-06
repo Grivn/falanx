@@ -3,7 +3,7 @@ package falanx
 import (
 	cProto "github.com/Grivn/libfalanx/zcommon/protos"
 	"github.com/Grivn/libfalanx/falanx/types"
-	"github.com/Grivn/libfalanx/atxcontainer"
+	"github.com/Grivn/libfalanx/txcontainer"
 
 	fCommonProto "github.com/ultramesh/flato-common/types/protos"
 )
@@ -17,7 +17,7 @@ type Falanx interface {
 type falanxImpl struct {
 	author uint64
 
-	txContainer atxcontainer.TxsContainer
+	txContainer txcontainer.TxsContainer
 }
 
 func NewFalanx(config types.Config) *falanxImpl {

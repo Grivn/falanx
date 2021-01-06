@@ -1,7 +1,7 @@
-package bclientsorder
+package clientsorder
 
 import (
-	"github.com/Grivn/libfalanx/bclientsorder/utils"
+	"github.com/Grivn/libfalanx/clientsorder/utils"
 	"github.com/Grivn/libfalanx/logger"
 	"github.com/Grivn/libfalanx/zcommon"
 	"github.com/Grivn/libfalanx/zcommon/protos"

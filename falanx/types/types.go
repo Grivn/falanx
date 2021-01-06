@@ -1,10 +1,10 @@
 package types
 
 import (
-	"github.com/Grivn/libfalanx/atxcontainer"
+	"github.com/Grivn/libfalanx/txcontainer"
 )
 
 type Config struct {
 	Author      uint64
-	TxContainer atxcontainer.TxsContainer
+	TxContainer txcontainer.TxsContainer
 }

@@ -1,4 +1,4 @@
-package dlocalba
+package localba
 
 type simpleBAImpl struct {
 	
