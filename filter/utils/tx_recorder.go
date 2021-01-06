@@ -13,7 +13,7 @@ type TxRecorder interface {
 	GetMalicious() []uint64
 }
 
-func NewTxRecorder(replicas []int, hash string, n uint64, f uint64) *txRecorderImpl {
+func NewTxRecorder(replicas []int, hash string, n int, f int) *txRecorderImpl {
 	return newTxRecorderImpl(replicas, hash, n, f)
 }
 
@@ -38,8 +38,8 @@ func (tr *txRecorderImpl) GetMalicious() []uint64 {
 }
 
 type txRecorderImpl struct {
-	n          uint64
-	f          uint64
+	n          int
+	f          int
 	hash       string
 	ordered    map[uint64]bool
 	candidates map[uint64]bool
@@ -47,10 +47,10 @@ type txRecorderImpl struct {
 	rand       rand.Rand
 }
 
-func newTxRecorderImpl(replicas []int, hash string, n uint64, f uint64) *txRecorderImpl {
+func newTxRecorderImpl(replicas []int, hash string, n int, f int) *txRecorderImpl {
 	sort.Ints(replicas)
 	whitelist := replicas
-	candidates := whitelist[:int(n-f)]
+	candidates := whitelist[:n-f]
 	candidatesMap := make(map[uint64]bool)
 	for _, i := range candidates {
 		id := uint64(i)

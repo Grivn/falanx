@@ -11,14 +11,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8076577a-4287-45be-8e84-c500e465776e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/filter/filter.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/filter/filter_impl.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/filter/timer_mgr.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/filter/transactions_filter.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/filter/utils/tx_list.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/filter/utils/tx_recorder.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/filter/types/types.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/creplicasorder/utils/replica_recorder.go" beforeDir="false" afterPath="$PROJECT_DIR$/creplicasorder/utils/replica_recorder.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filter/filter.go" beforeDir="false" afterPath="$PROJECT_DIR$/filter/filter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filter/filter_impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/filter/filter_impl.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filter/helper.go" beforeDir="false" afterPath="$PROJECT_DIR$/filter/helper.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filter/transactions_filter.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/filter/utils/tx_recorder.go" beforeDir="false" afterPath="$PROJECT_DIR$/filter/utils/tx_recorder.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,9 +113,9 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="221" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1608885692128" />
-    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1609818282530">
+    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1609934990157">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1609818282530" />
+    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1609934990157" />
   </component>
 </project>
