@@ -11,12 +11,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8076577a-4287-45be-8e84-c500e465776e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/filter/types/types.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/filter/utils/utils.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/graphengine/graph_engin_impl.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/filter/filter.go" beforeDir="false" afterPath="$PROJECT_DIR$/filter/filter.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/filter/filter_impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/filter/filter_impl.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/filter/helper.go" beforeDir="false" afterPath="$PROJECT_DIR$/filter/helper.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/filter/transactions_filter.go" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/filter/utils/tx_recorder.go" beforeDir="false" afterPath="$PROJECT_DIR$/filter/utils/tx_recorder.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

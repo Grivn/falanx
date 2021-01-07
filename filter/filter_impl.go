@@ -114,6 +114,7 @@ type transactionsFilterImpl struct {
 	appointingExit  chan bool
 	close           chan bool
 
+	// logger
 	logger logger.Logger
 }
 

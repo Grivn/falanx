@@ -42,19 +42,27 @@ type txRecorderImpl struct {
 	f          int
 	hash       string
 	ordered    map[uint64]bool
-	candidates map[uint64]bool
+	pending    map[uint64]bool
 	whitelist  []int
-	rand       rand.Rand
+	candidates []int
+	rand       *rand.Rand
 }
 
 func newTxRecorderImpl(replicas []int, hash string, n int, f int) *txRecorderImpl {
 	sort.Ints(replicas)
-	whitelist := replicas
-	candidates := whitelist[:n-f]
-	candidatesMap := make(map[uint64]bool)
+	candidates := replicas[:n-f]
+	pendingMap := make(map[uint64]bool)
 	for _, i := range candidates {
 		id := uint64(i)
-		candidatesMap[id] = true
+		pendingMap[id] = true
+	}
+
+	// generate a seed for pseudo random function
+	hex := StringToHex(hash)
+	seed := int64(0)
+	for _, val := range hex {
+		s := int64(val)
+		seed += s
 	}
 
 	return &txRecorderImpl{
@@ -62,8 +70,10 @@ func newTxRecorderImpl(replicas []int, hash string, n int, f int) *txRecorderImp
 		f:          f,
 		hash:       hash,
 		ordered:    make(map[uint64]bool),
+		pending:    pendingMap,
 		whitelist:  replicas,
-		candidates: candidatesMap,
+		candidates: candidates,
+		rand:       rand.New(rand.NewSource(seed)),
 	}
 }
 
@@ -77,19 +87,20 @@ func (tr *txRecorderImpl) add(id uint64) {
 
 func (tr *txRecorderImpl) update(whitelist []int) {
 	tr.whitelist = whitelist
-	candidates := whitelist[:int(tr.n-tr.f)]
-	tr.candidates = make(map[uint64]bool)
+	candidates := whitelist[:tr.n-tr.f]
+	tr.pending = make(map[uint64]bool)
 	for _, i := range candidates {
 		id := uint64(i)
-		tr.candidates[id] = true
+		tr.pending[id] = true
 		if tr.ordered[id] {
-			tr.candidates[id] = false
+			tr.pending[id] = false
 		}
 	}
+	tr.candidates = candidates
 }
 
 func (tr *txRecorderImpl) pendingLen() int {
-	return len(tr.candidates)
+	return len(tr.pending)
 }
 
 func (tr *txRecorderImpl) orderLen() int {
@@ -98,7 +109,7 @@ func (tr *txRecorderImpl) orderLen() int {
 
 func (tr *txRecorderImpl) getMalicious() []uint64 {
 	var malicious []uint64
-	for id, pending := range tr.candidates {
+	for id, pending := range tr.pending {
 		if pending {
 			malicious = append(malicious, id)
 		}
