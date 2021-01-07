@@ -1,1 +1,1 @@
-# Falanx: graph engine
+# Falanx: rawGraph engine

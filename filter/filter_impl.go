@@ -2,6 +2,7 @@ package filter
 
 import (
 	"github.com/Grivn/libfalanx/filter/types"
+	graphTypes "github.com/Grivn/libfalanx/graphengine/types"
 	"math"
 	"time"
 
@@ -22,8 +23,8 @@ type transactionsFilterImpl struct {
 	//      t2 --> t1 --> t3 --> t4
 	//      t3 --> t1 --> t4
 	//
-	// we would like to order the set {{t1,t2,t2,t3},{t2,t1,t1,t1}}
-	// in other words, we would like to order the set T={t1,t2,t3}
+	// we would like to replicaOrder the set {{t1,t2,t2,t3},{t2,t1,t1,t1}}
+	// in other words, we would like to replicaOrder the set T={t1,t2,t3}
 	// here the transactions in T should meet some essential conditions
 	n     int
 	f     int
@@ -48,7 +49,7 @@ type transactionsFilterImpl struct {
 	// 3) whether candidates have ordered the transaction or not
 	//
 	// vpRecorder
-	// the log-order from every replica, struct: replica id ==> transaction list
+	// the log-replicaOrder from every replica, struct: replica id ==> transaction list
 	//
 	amountSeq  uint64
 	txsGraph   map[uint64]map[uint64]string
@@ -88,8 +89,8 @@ type transactionsFilterImpl struct {
 	appointedTxs []string
 
 	// channel =====================================================================
-	// order:           channel used to deliver the ordered logs from replicas
-	// passed:          channel used to deliver the transactions to candidate_filter
+	// replicaOrder:    channel used to deliver the ordered logs from replicas
+	// graphEngine:     channel used to deliver the transactions to candidate_filter
 	// pavingTimer:     channel used to process timeout events for paving check
 	// pavingExit:      channel used to stop
 	// gatheringTimer:  channel used to process timeout events for gathering check
@@ -98,14 +99,15 @@ type transactionsFilterImpl struct {
 	// appointingExit:  channel used to stop
 	// close:           channel used to stop
 	//
-	// replica_order ------------- order --------> recorder
-	// txsGraph ------------------ paving -------> timeout or pavedTxs
-	// pavedTxs, txRecorder ------ gathering ----> timeout or gatheredTxs
-	// gatheredTxs, txRecorder --- appointing ---> timeout or appointedTxs
-	// appointedTxs -------------- passed -------> graph_engine
+	// replica_order ------------ replicaOrder -----> recorder
+	// txsGraph ----------------- paving -----------> timeout or pavedTxs
+	// pavedTxs, txRecorder ----- gathering --------> timeout or gatheredTxs
+	// gatheredTxs, txRecorder -- appointing -------> timeout or appointedTxs
+	// appointedTxs ------------- graphEngine ------> graph_engine
 	//
-	order           chan *protos.OrderedLog
-	passed          chan []string
+	replicaOrder chan *protos.OrderedLog
+	graphEngine  chan graphTypes.GraphEvent
+
 	pavingTimer     chan bool
 	pavingExit      chan bool
 	gatheringTimer  chan bool
@@ -145,8 +147,8 @@ func newTransactionsFilterImpl(c types.Config) *transactionsFilterImpl {
 		gatheredTxs:  nil,
 		appointedTxs: nil,
 
-		order:           c.Order,
-		passed:          c.Passed,
+		replicaOrder:    c.Order,
+		graphEngine:     c.Graph,
 		pavingTimer:     make(chan bool),
 		pavingExit:      make(chan bool),
 		gatheringTimer:  make(chan bool),
@@ -176,9 +178,12 @@ func (tf *transactionsFilterImpl) listenTimerEvent() {
 		case <-tf.close:
 			return
 
-		case log := <-tf.order:
+		case log := <-tf.replicaOrder:
 			tf.add(log)
 			tf.scanner()
+
+		case <-tf.graphEngine:
+
 
 		case <-tf.pavingTimer:
 			tf.stopPavingTimer()
@@ -343,7 +348,11 @@ func (tf *transactionsFilterImpl) appointingScanner() {
 		if len(tf.gatheredTxs) > 0 {
 			tf.appointingScanner()
 		} else {
-			tf.passed <- tf.appointedTxs
+			event := graphTypes.GraphEvent{
+				Type:  graphTypes.TypeGraphPassedTxs,
+				Event: tf.appointedTxs,
+			}
+			tf.graphEngine <- event
 			tf.appointedTxs = nil
 			tf.scanner()
 		}
@@ -355,4 +364,8 @@ func (tf *transactionsFilterImpl) appointingScanner() {
 	// we should return to receive more ordered logs from these replicas
 	// ===============================================================
 	return
+}
+
+func (tf *transactionsFilterImpl) relationInfo() {
+
 }
