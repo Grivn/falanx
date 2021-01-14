@@ -115,7 +115,7 @@ func (o *orderedPool) processOrderedRequests(req *protos.OrderedReq) {
 func (o *orderedPool) processOrderedHash(txHash string) {
 	// todo trigger the component of channel related to replica order
 }
-// clients' listener =================================================
+// clientsOrder' listener =================================================
 
 func (o *orderedPool) listenOrderedLogs() {
 

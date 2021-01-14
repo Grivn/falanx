@@ -1,19 +1,11 @@
 package clientsorder
 
 import (
+	"github.com/Grivn/libfalanx/clientsorder/types"
 	"github.com/Grivn/libfalanx/clientsorder/utils"
 	"github.com/Grivn/libfalanx/logger"
-	"github.com/Grivn/libfalanx/zcommon"
 	"github.com/Grivn/libfalanx/zcommon/protos"
 )
-
-// Implement ======================================================
-func NewClientOrder(id uint64, orderedC chan string, tools zcommon.Tools, logger logger.Logger) *clientOrderImpl {
-	return newClientOrderImpl(id, orderedC, tools, logger)
-}
-func (c *clientOrderImpl) ReceiveOrderedReq(r *protos.OrderedReq) {
-	c.receiveOrderedRequest(r)
-}
 
 type clientOrderImpl struct {
 	id uint64
@@ -27,22 +19,43 @@ type clientOrderImpl struct {
 	recorder utils.ClientRecorder // recorder si used to record the counter status of particular client
 
 	// message channel ===========================================================
-	orderChan chan string // orderChan is used to trigger local log sort
+	orderC chan string // orderC is used to trigger local log sort
+	recvC  chan *protos.OrderedReq
+	close  chan bool
 
 	// essential tools ===========================================================
-	tools  zcommon.Tools
 	logger logger.Logger
 }
 
-func newClientOrderImpl(id uint64, orderedC chan string, tools zcommon.Tools, logger logger.Logger) *clientOrderImpl {
-	logger.Noticef("Initialize client order instance: [id]%d", id)
+func newClientOrderImpl(c types.Config) *clientOrderImpl {
+	c.Logger.Noticef("Initialize client order instance: [id]%d", c.ID)
 	return &clientOrderImpl{
-		id:        id,
-		cache:     utils.NewReqCache(),
-		recorder:  utils.NewClientRecorder(),
-		orderChan: orderedC,
-		tools:     tools,
-		logger:    logger,
+		id:       c.ID,
+		cache:    utils.NewReqCache(),
+		recorder: utils.NewClientRecorder(),
+		recvC:    c.RecvC,
+		orderC:   c.OrderC,
+		logger:   c.Logger,
+	}
+}
+
+func (c *clientOrderImpl) start() {
+	go c.listenOrderedRequest()
+}
+
+func (c *clientOrderImpl) stop() {
+	close(c.close)
+}
+
+func (c *clientOrderImpl) listenOrderedRequest() {
+	for {
+		select {
+		case <-c.close:
+			return
+
+		case req := <-c.recvC:
+			c.receiveOrderedRequest(req)
+		}
 	}
 }
 
@@ -90,6 +103,6 @@ func (c *clientOrderImpl) orderCachedRequests() uint64 {
 func (c *clientOrderImpl) postOrderedTxs(list []string) {
 	for _, txHash := range list {
 		c.logger.Debugf("Post request %s from client %d", txHash, c.id)
-		c.orderChan <- txHash
+		c.orderC <- txHash
 	}
 }

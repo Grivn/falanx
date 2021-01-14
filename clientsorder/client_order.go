@@ -1,10 +1,15 @@
 package clientsorder
 
 import (
-	"github.com/Grivn/libfalanx/zcommon/protos"
+	"github.com/Grivn/libfalanx/clientsorder/types"
 )
 
-// Interface ======================================================
-type ClientOrder interface {
-	ReceiveOrderedReq(r *protos.OrderedReq)
+func NewClientOrder(c types.Config) *clientOrderImpl {
+	return newClientOrderImpl(c)
+}
+func (c *clientOrderImpl) Start() {
+	c.start()
+}
+func (c *clientOrderImpl) Stop() {
+	c.stop()
 }

@@ -10,5 +10,4 @@ type Network interface {
 	BroadcastTransactions(txs []*fCommonProto.Transaction)
 	BroadcastOrderedReq(req *protos.OrderedReq)
 	BroadcastOrderedLog(log *protos.OrderedLog)
-	BroadcastSuspect(sus *protos.Suspect)
 }

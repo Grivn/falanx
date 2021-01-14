@@ -7,7 +7,7 @@ import (
 
 type Config struct {
 	ID     uint64
-	RecvC  chan *protos.OrderedLog
-	OrderC chan *protos.OrderedLog
+	RecvC  chan *protos.OrderedReq
+	OrderC chan string
 	Logger logger.Logger
 }

@@ -14,12 +14,14 @@ type TxList interface {
 	Has(key string) bool
 	Front() *list.Element
 	Remove(e *list.Element, key string) error
+	Len() int
 
 	// value controller
 	FrontLog() *protos.OrderedLog
 	GetLog(key string) *protos.OrderedLog
 	GetSequence(key string) (uint64, error)
 	GetTimestamp(key string) (int64, error)
+	RemoveLog(txHash string)
 }
 // ====================================================================
 
@@ -27,36 +29,44 @@ func NewTxList() *txListImpl {
 	return newTxListImpl()
 }
 
-func (rr *txListImpl) Add(l *protos.OrderedLog) {
-	rr.add(l)
+func (list *txListImpl) Add(l *protos.OrderedLog) {
+	list.add(l)
 }
 
-func (rr *txListImpl) GetLog(key string) *protos.OrderedLog {
-	return rr.getLog(key)
+func (list *txListImpl) GetLog(key string) *protos.OrderedLog {
+	return list.getLog(key)
 }
 
-func (rr *txListImpl) GetSequence(key string) (uint64, error) {
-	return rr.getSequence(key)
+func (list *txListImpl) GetSequence(key string) (uint64, error) {
+	return list.getSequence(key)
 }
 
-func (rr *txListImpl) GetTimestamp(key string) (int64, error) {
-	return rr.getTimestamp(key)
+func (list *txListImpl) GetTimestamp(key string) (int64, error) {
+	return list.getTimestamp(key)
 }
 
-func (rr *txListImpl) Has(key string) bool {
-	return rr.has(key)
+func (list *txListImpl) Has(key string) bool {
+	return list.has(key)
 }
 
-func (rr *txListImpl) Remove(e *list.Element, key string) error {
-	return rr.remove(e, key)
+func (list *txListImpl) Remove(e *list.Element, key string) error {
+	return list.remove(e, key)
 }
 
-func (rr *txListImpl) Front() *list.Element {
-	return rr.front()
+func (list *txListImpl) Front() *list.Element {
+	return list.front()
 }
 
-func (rr *txListImpl) FrontLog() *protos.OrderedLog {
-	return rr.frontLog()
+func (list *txListImpl) FrontLog() *protos.OrderedLog {
+	return list.frontLog()
+}
+
+func (list *txListImpl) Len() int {
+	return list.len()
+}
+
+func (list *txListImpl) RemoveLog(txHash string) {
+	list.removeLog(txHash)
 }
 
 type txListImpl struct {
@@ -70,24 +80,24 @@ func newTxListImpl() *txListImpl {
 	return &txListImpl{}
 }
 
-func (rr *txListImpl) add(l *protos.OrderedLog) {
-	if rr.has(l.TxHash) {
+func (list *txListImpl) add(l *protos.OrderedLog) {
+	if list.has(l.TxHash) {
 		return
 	}
-	e := rr.list.PushBack(l)
-	rr.presence[l.TxHash] = e
+	e := list.list.PushBack(l)
+	list.presence[l.TxHash] = e
 }
 
-func (rr *txListImpl) get(key string) *list.Element {
-	e, ok := rr.presence[key]
+func (list *txListImpl) get(key string) *list.Element {
+	e, ok := list.presence[key]
 	if !ok {
 		return nil
 	}
 	return e
 }
 
-func (rr *txListImpl) getLog(key string) *protos.OrderedLog {
-	e := rr.get(key)
+func (list *txListImpl) getLog(key string) *protos.OrderedLog {
+	e := list.get(key)
 	if e == nil {
 		return nil
 	}
@@ -98,60 +108,78 @@ func (rr *txListImpl) getLog(key string) *protos.OrderedLog {
 	return r
 }
 
-func (rr *txListImpl) getSequence(key string) (uint64, error) {
-	e := rr.getLog(key)
+func (list *txListImpl) getSequence(key string) (uint64, error) {
+	e := list.getLog(key)
 	if e == nil {
 		return 0, errors.New("nil element")
 	}
 	return e.Sequence, nil
 }
 
-func (rr *txListImpl) getTimestamp(key string) (int64, error) {
-	e := rr.getLog(key)
+func (list *txListImpl) getTimestamp(key string) (int64, error) {
+	e := list.getLog(key)
 	if e == nil {
 		return 0, errors.New("nil element")
 	}
 	return e.Timestamp, nil
 }
 
-func (rr *txListImpl) has(key string) bool {
-	_, ok := rr.presence[key]
+func (list *txListImpl) has(key string) bool {
+	_, ok := list.presence[key]
 	return ok
 }
 
-func (rr *txListImpl) remove(e *list.Element, key string) error {
+func (list *txListImpl) remove(e *list.Element, key string) error {
 	if e == nil {
 		return errors.New("nil element")
 	}
-	if !rr.has(key) {
+	if !list.has(key) {
 		return errors.New("non-exited element")
 	}
-	if rr.get(key) != e {
+	if list.get(key) != e {
 		return errors.New("unpaired element")
 	}
-	rr.list.Remove(e)
-	delete(rr.presence, key)
+	list.list.Remove(e)
+	delete(list.presence, key)
 	return nil
 }
 
-func (rr *txListImpl) frontLog() *protos.OrderedLog {
-	log, ok := rr.front().Value.(*protos.OrderedLog)
+func (list *txListImpl) frontLog() *protos.OrderedLog {
+	log, ok := list.front().Value.(*protos.OrderedLog)
 	if !ok {
 		return nil
 	}
 	return log
 }
 
-func (rr *txListImpl) front() *list.Element {
-	return rr.list.Front()
+func (list *txListImpl) front() *list.Element {
+	return list.list.Front()
 }
 
-func (rr *txListImpl) pushBack(key string, value interface{}) *list.Element {
-	if rr.has(key) {
+func (list *txListImpl) pushBack(key string, value interface{}) *list.Element {
+	if list.has(key) {
 		return nil
 	}
-	e := rr.list.PushBack(value)
-	rr.presence[key] = e
+	e := list.list.PushBack(value)
+	list.presence[key] = e
 	return e
 }
 
+func (list *txListImpl) len() int {
+	if list.presence == nil {
+		return 0
+	}
+	return len(list.presence)
+}
+
+func (list *txListImpl) removeLog(txHash string) {
+	if !list.has(txHash) {
+		return
+	}
+	e := list.get(txHash)
+	err := list.remove(e, txHash)
+	if err != nil {
+		panic(err)
+		return
+	}
+}

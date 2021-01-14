@@ -1,7 +1,15 @@
 package replicasorder
 
-import "github.com/Grivn/libfalanx/zcommon/protos"
+import "github.com/Grivn/libfalanx/replicasorder/types"
 
-type ReplicaOrder interface {
-	ReceiveOrderedReq(l *protos.OrderedLog)
+func NewReplicaOrder(c types.Config) *replicaOrderImpl {
+	return newReplicaOrderImpl(c)
+}
+
+func (r *replicaOrderImpl) Start() {
+	r.start()
+}
+
+func (r *replicaOrderImpl) Stop() {
+	r.stop()
 }

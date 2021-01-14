@@ -11,6 +11,7 @@ type TxRecorder interface {
 	PendingLen() int
 	OrderLen() int
 	GetMalicious() []uint64
+	GetCandidates() []int
 }
 
 func NewTxRecorder(replicas []int, hash string, n int, f int) *txRecorderImpl {
@@ -35,6 +36,10 @@ func (tr *txRecorderImpl) OrderLen() int {
 
 func (tr *txRecorderImpl) GetMalicious() []uint64 {
 	return tr.getMalicious()
+}
+
+func (tr *txRecorderImpl) GetCandidates() []int {
+	return tr.getCandidates()
 }
 
 type txRecorderImpl struct {
@@ -115,4 +120,8 @@ func (tr *txRecorderImpl) getMalicious() []uint64 {
 		}
 	}
 	return malicious
+}
+
+func (tr *txRecorderImpl) getCandidates() []int {
+	return tr.candidates
 }

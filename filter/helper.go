@@ -1,6 +1,11 @@
 package filter
 
-import "time"
+import (
+	"math"
+	"time"
+
+	"github.com/Grivn/libfalanx/filter/types"
+)
 
 func (tf *transactionsFilterImpl) startPavingTimer(exitCh chan bool) {
 	tf.paving = true
@@ -59,10 +64,33 @@ func (tf *transactionsFilterImpl) stopAppointingTimer() {
 	tf.appointing = false
 }
 
+func (tf *transactionsFilterImpl) getRelationCert(former, latter string) *types.RelationCert {
+	idr := types.RelationId{From: former, To: latter}
+	value, ok := tf.certStore[idr]
+
+	if ok {
+		return value
+	}
+
+	cert := &types.RelationCert{
+		Finished:        false,
+		Status:          types.NotEfficient,
+		Scanned:         make(map[uint64]bool),
+		FormerPreferred: 0,
+		LatterPreferred: 0,
+	}
+	tf.certStore[idr] = cert
+	return cert
+}
+
 func (tf *transactionsFilterImpl) allReplicas() int {
 	return tf.n
 }
 
 func (tf *transactionsFilterImpl) allQuorumReplicas() int {
 	return tf.n-tf.f
+}
+
+func (tf *transactionsFilterImpl) moreThanHalf() int {
+	return int(math.Ceil(float64(tf.n)/float64(2)))
 }

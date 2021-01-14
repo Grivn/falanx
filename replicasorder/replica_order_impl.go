@@ -1,19 +1,11 @@
 package replicasorder
 
 import (
-	"github.com/Grivn/libfalanx/replicasorder/utils"
 	"github.com/Grivn/libfalanx/logger"
-	"github.com/Grivn/libfalanx/zcommon"
+	"github.com/Grivn/libfalanx/replicasorder/types"
+	"github.com/Grivn/libfalanx/replicasorder/utils"
 	"github.com/Grivn/libfalanx/zcommon/protos"
 )
-
-func NewReplicaOrder(id uint64, tools zcommon.Tools, logger logger.Logger) *replicaOrderImpl {
-	return newReplicaOrderImpl(id, tools, logger)
-}
-
-func (r *replicaOrderImpl) ReceiveOrderedReq(l *protos.OrderedLog){
-	r.receiveOrderedLogs(l)
-}
 
 type replicaOrderImpl struct {
 	id uint64
@@ -23,18 +15,43 @@ type replicaOrderImpl struct {
 	cache    utils.CacheLog        // cache is used to store the logs which temporarily cannot be processed
 	recorder utils.ReplicaRecorder // recorder si used to record the counter status of particular replica
 
+	// channel
+	orderC chan *protos.OrderedLog
+	recvC  chan *protos.OrderedLog
+	close  chan bool
+
 	// essential tools ===========================================================
-	tools  zcommon.Tools
 	logger logger.Logger
 }
 
-func newReplicaOrderImpl(id uint64, tools zcommon.Tools, logger logger.Logger) *replicaOrderImpl {
+func newReplicaOrderImpl(c types.Config) *replicaOrderImpl {
 	return &replicaOrderImpl{
-		id:       id,
+		id:       c.ID,
+		recvC:    c.RecvC,
+		orderC:   c.OrderC,
 		cache:    utils.NewLogCache(),
 		recorder: utils.NewReplicaRecorder(),
-		tools:    tools,
-		logger:   logger,
+		logger:   c.Logger,
+	}
+}
+
+func (r *replicaOrderImpl) start() {
+	go r.listenOrderedRequest()
+}
+
+func (r *replicaOrderImpl) stop() {
+	close(r.close)
+}
+
+func (r *replicaOrderImpl) listenOrderedRequest() {
+	for {
+		select {
+		case <-r.close:
+			return
+
+		case log := <-r.recvC:
+			r.receiveOrderedLogs(log)
+		}
 	}
 }
 
@@ -74,6 +91,12 @@ func (r *replicaOrderImpl) orderCachedRequests() uint64 {
 		r.recorder.Update(l)
 		r.logger.Debugf("Read log cache of replica %d, counter %d, tx %v",
 			r.id, r.recorder.Counter(), l.TxHash)
+		r.postOrderedLogs(l)
 	}
 	return r.recorder.Counter()
+}
+
+func (r *replicaOrderImpl) postOrderedLogs(log *protos.OrderedLog) {
+	r.logger.Debugf("Post log %v from replica %d", log, log.ReplicaId)
+	r.orderC <- log
 }

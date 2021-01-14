@@ -1,13 +1,23 @@
 package txcontainer
 
-import fCommonProto "github.com/ultramesh/flato-common/types/protos"
+import (
+	"github.com/Grivn/libfalanx/txcontainer/types"
+	fCommonProto "github.com/ultramesh/flato-common/types/protos"
+)
 
-// Interface ================================================================
-// TxsContainer is only used to receive the transactions and their status
-// we don't need to maintain the order here and it is only a container for transactions
-// no duplicated transactions
-type TxsContainer interface {
-	Add(tx *fCommonProto.Transaction)
-	Get(txHash string) *fCommonProto.Transaction
-	Remove(txHash string) error
+func NewTxContainer(config types.Config) *containerImpl {
+	return &containerImpl{
+		pendingTxs: make(map[string]*fCommonProto.Transaction),
+		tools:      config.Tools,
+		logger:     config.Logger,
+	}
+}
+func (c *containerImpl) Add(tx *fCommonProto.Transaction) {
+	c.add(tx)
+}
+func (c *containerImpl) Get(txHash string) *fCommonProto.Transaction {
+	return c.get(txHash)
+}
+func (c *containerImpl) Remove(txHash string) error {
+	return c.remove(txHash)
 }

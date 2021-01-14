@@ -1,8 +1,8 @@
 package filter
 
 import (
+	"container/list"
 	"github.com/Grivn/libfalanx/filter/types"
-	graphTypes "github.com/Grivn/libfalanx/graphengine/types"
 	"math"
 	"time"
 
@@ -30,6 +30,12 @@ type transactionsFilterImpl struct {
 	f     int
 	multi int // default 1
 
+	// verifier for transactions
+	// to check the client
+	verifiedSeq uint64
+	pendingTxs  utils.TxList
+	verifiedTxs utils.TxList
+
 	// recorder ====================================================================
 	// txsGraph
 	// key: sequence number
@@ -51,7 +57,7 @@ type transactionsFilterImpl struct {
 	// vpRecorder
 	// the log-replicaOrder from every replica, struct: replica id ==> transaction list
 	//
-	amountSeq  uint64
+	pavedSeq   uint64
 	txsGraph   map[uint64]map[uint64]string
 	txRecorder map[string]utils.TxRecorder
 	vpRecorder map[uint64]utils.TxList
@@ -84,9 +90,11 @@ type transactionsFilterImpl struct {
 	paving       bool
 	gathering    bool
 	appointing   bool
-	pavedTxs     []string
+	pavedTxs     utils.TxList
+	waiting      []string
 	gatheredTxs  []string
-	appointedTxs []string
+	appointedTxs map[string]bool
+	graphSize    int
 
 	// channel =====================================================================
 	// replicaOrder:    channel used to deliver the ordered logs from replicas
@@ -106,7 +114,10 @@ type transactionsFilterImpl struct {
 	// appointedTxs ------------- graphEngine ------> graph_engine
 	//
 	replicaOrder chan *protos.OrderedLog
-	graphEngine  chan graphTypes.GraphEvent
+	graphEngine  chan interface{}
+
+	graph map[string]map[string]bool
+	certStore map[types.RelationId]*types.RelationCert
 
 	pavingTimer     chan bool
 	pavingExit      chan bool
@@ -134,7 +145,7 @@ func newTransactionsFilterImpl(c types.Config) *transactionsFilterImpl {
 		f:     f,
 		multi: multi,
 
-		amountSeq:  uint64(0),
+		pavedSeq:   uint64(0),
 		txsGraph:   make(map[uint64]map[uint64]string),
 		vpRecorder: vpRecorder,
 
@@ -145,7 +156,7 @@ func newTransactionsFilterImpl(c types.Config) *transactionsFilterImpl {
 		appointing:   false,
 		pavedTxs:     nil,
 		gatheredTxs:  nil,
-		appointedTxs: nil,
+		appointedTxs: make(map[string]bool),
 
 		replicaOrder:    c.Order,
 		graphEngine:     c.Graph,
@@ -201,6 +212,12 @@ func (tf *transactionsFilterImpl) listenTimerEvent() {
 }
 
 func (tf *transactionsFilterImpl) add(l *protos.OrderedLog) {
+
+	if !tf.verifiedTxs.Has(l.TxHash) {
+		// there is an unverified tx, append it into the pending tx set
+		tf.pendingTxs.Add(l)
+	}
+
 	// update txsGraph
 	if tf.txsGraph[l.Sequence] == nil {
 		tf.txsGraph[l.Sequence] = make(map[uint64]string)
@@ -218,28 +235,14 @@ func (tf *transactionsFilterImpl) add(l *protos.OrderedLog) {
 }
 
 func (tf *transactionsFilterImpl) scanner() bool {
+
+	// firstly, try to check the pending txs to guarantee there are efficient replicas have ordered them
+	tf.gatheringScanner()
+
 	// we should finish the paving stage at first to find a stable set
 	tf.pavingScanner()
 	if tf.paving {
-		// we are scanning amount now
-		// we should return to receive more ordered logs from replicas
-		return true
-	}
-
-	// we should make sure that every tx in stable set has been ordered by efficient replicas
-	// and we would like to gather the txs one by one
-	tf.gatheringScanner()
-	if tf.gathering {
-		// we are scanning verification now
-		// we should return to receive more ordered logs from replicas
-		return true
-	}
-
-	// after we finish the gathering of stable set, we would like to try to scan the candidate
-	// replicas to find if they have ordered the tx or not
-	tf.appointingScanner()
-	if tf.appointing {
-		// we are scanning appointed candidates of gathered transaction now
+		// try to pave
 		// we should return to receive more ordered logs from replicas
 		return true
 	}
@@ -247,57 +250,9 @@ func (tf *transactionsFilterImpl) scanner() bool {
 	return false
 }
 
-func (tf *transactionsFilterImpl) pavingScanner() {
-	if len(tf.pavedTxs) != 0 {
-		// it indicates that we are now gathering the ordered logs
-		// from efficient replicas
-		return
-	}
-	if len(tf.gatheredTxs) != 0 {
-		// it indicates that we are now gathering the ordered logs
-		// from the appointed candidate replicas
-		return
-	}
-	if len(tf.appointedTxs) != 0 {
-		// it indicates there is a series of transaction waiting to
-		// generate a execution graph
-		return
-	}
-
-	nextAmountSeq := tf.amountSeq + 1
-	nextLen := len(tf.txsGraph[nextAmountSeq])
-	if nextLen < tf.allQuorumReplicas() {
-		// we won't process the amount check until the length of next serial of txs no less than n-f
-		return
-	}
-	if !tf.paving {
-		// we have received ordered log with the same sequence number from n-f replicas
-		// here, we will start a timer for it until all the replicas order the log for
-		// current sequence number
-		tf.startPavingTimer(tf.pavingExit)
-	}
-	if nextLen == tf.allReplicas() {
-		tf.stopPavingTimer()
-		var txList []string
-		for _, hash := range tf.txsGraph[tf.amountSeq] {
-			txList = append(txList, hash)
-		}
-		tf.pavedTxs = txList
-		tf.amountSeq++
-		return
-	}
-	return
-}
-
 func (tf *transactionsFilterImpl) gatheringScanner() {
-	if len(tf.pavedTxs) == 0 {
-		// it indicates that we haven't found a stable paved set yet and we cannot try to
-		// gather the ordered logs in this condition
-		return
-	}
-	if len(tf.appointedTxs) != 0 {
-		// it indicates there is a series of transaction waiting to
-		// generate a execution graph
+	if tf.pendingTxs.Len() == 0 {
+		// no txs to be checked
 		return
 	}
 
@@ -305,34 +260,96 @@ func (tf *transactionsFilterImpl) gatheringScanner() {
 		tf.startGatheringTimer(tf.gatheringExit)
 	}
 
-	txHash := tf.pavedTxs[0]
+	log := tf.pendingTxs.FrontLog()
+	txHash := log.TxHash
 	if tf.txRecorder[txHash].OrderLen() >= tf.allQuorumReplicas() {
 		tf.stopGatheringTimer()
-		tf.gatheredTxs = append(tf.gatheredTxs, txHash)
-		tf.pavedTxs = tf.pavedTxs[:1]
-		if len(tf.pavedTxs) > 0 {
+
+		// efficient replicas have ordered such a transaction,
+		// and we will remove the tx from pending txs and update the verified set
+		tf.pendingTxs.RemoveLog(txHash)
+		tf.verifiedTxs.Add(log)
+		tf.verifiedSeq++
+
+		if tf.pendingTxs.Len() > 0 {
+			// pending transactions there need to be checked, restart another round of gathering scanner
 			tf.gatheringScanner()
 		}
 	}
 
 	// ===============================================================
-	// we are scanning verification now
-	// there aren't efficient replicas order current transaction
-	// we should return to receive more ordered logs from replicas
+	// we are trying to gather efficient ordered logs for one tx now
+	// return to receive more logs
 	// ===============================================================
 	return
 }
 
-func (tf *transactionsFilterImpl) appointingScanner() {
-	if len(tf.pavedTxs) != 0 {
-		// it indicates that current node is trying to gather efficient ordered logs
-		// we cannot start the scanner of candidates now
+func (tf *transactionsFilterImpl) pavingScanner() {
+	if tf.verifiedTxs.Len() == 0 {
+		// there aren't any verified transactions for us to pave
 		return
 	}
 
-	if len(tf.gatheredTxs) == 0 {
-		// if there is non-transaction paved or gathered, it means we need try to pave
-		// the floor at first and we don't need to scan particular replicas for tx
+	if tf.appointing {
+		return
+	}
+
+	nextPavingSeq := tf.pavedSeq + 1
+	if nextPavingSeq > tf.verifiedSeq {
+		// there aren't efficient verified transactions for us to pave
+		return
+	}
+
+	nextLen := len(tf.txsGraph[nextPavingSeq])
+	if nextLen < tf.allQuorumReplicas() {
+		// we won't try to pave until the length of next serial of txs no less than n-f
+		return
+	}
+
+	if !tf.paving {
+		// we have received ordered log with the same sequence number from n-f replicas
+		// here, we will start a timer for it until all the replicas order the log for
+		// current sequence number
+		tf.startPavingTimer(tf.pavingExit)
+	}
+
+	if nextLen == tf.allReplicas() {
+		// all the replicas has an ordered log on such a sequence number, which means 'paved'
+		for _, hash := range tf.txsGraph[tf.pavedSeq] {
+			log := tf.verifiedTxs.GetLog(hash)
+			if log == nil {
+				// we need to guarantee that all the paved txs are verified by efficient replicas
+				return
+			}
+			tf.pavedTxs.Add(log)
+		}
+		tf.pavedSeq++
+		tf.stopPavingTimer()
+
+		if tf.pavedTxs.Len() > tf.graphSize {
+			var (
+				hashList []string
+				next     *list.Element
+			)
+			i := 0
+			for element := tf.pavedTxs.Front(); i < tf.pavedTxs.Len(); element = next {
+				log, ok := element.Value.(*protos.OrderedLog)
+				if !ok {
+					return
+				}
+				i++
+				next = element.Next()
+				hash := log.TxHash
+				hashList = append(hashList, hash)
+			}
+			tf.waiting = hashList
+			tf.relationScanner()
+		}
+	}
+}
+
+func (tf *transactionsFilterImpl) relationScanner() {
+	if len(tf.waiting) == 0 {
 		return
 	}
 
@@ -340,32 +357,119 @@ func (tf *transactionsFilterImpl) appointingScanner() {
 		tf.startAppointingTimer(tf.appointingExit)
 	}
 
-	txHash := tf.gatheredTxs[0]
-	if tf.txRecorder[txHash].PendingLen() == 0 {
-		tf.stopAppointingTimer()
-		tf.appointedTxs = append(tf.appointedTxs, txHash)
-		tf.gatheredTxs = tf.gatheredTxs[:1]
-		if len(tf.gatheredTxs) > 0 {
-			tf.appointingScanner()
-		} else {
-			event := graphTypes.GraphEvent{
-				Type:  graphTypes.TypeGraphPassedTxs,
-				Event: tf.appointedTxs,
+	if tf.graph == nil {
+		tf.graph = make(map[string]map[string]bool)
+	}
+
+	log := tf.pavedTxs.FrontLog()
+	if log == nil {
+		return
+	}
+	self := log.TxHash
+
+	if tf.graph[self] == nil {
+		tf.graph[self] = make(map[string]bool)
+	}
+
+	finished := true
+	for _, other := range tf.waiting {
+		if self == other {
+			continue
+		}
+		switch tf.check(self, other) {
+		case types.FormerPriority:
+			cert := tf.getRelationCert(other, self)
+			if !cert.Finished {
+				cert.Finished = true
+				cert.Status = types.LatterPriority
 			}
-			tf.graphEngine <- event
-			tf.appointedTxs = nil
-			tf.scanner()
+		case types.LatterPriority:
+			cert := tf.getRelationCert(other, self)
+			if !cert.Finished {
+				cert.Finished = true
+				cert.Status = types.FormerPriority
+			}
+		case types.NotEfficient:
+			finished = false
 		}
 	}
 
-	// ===============================================================
-	// we are scanning appointed candidates now
-	// there are some candidate replicas haven't ordered current transaction
-	// we should return to receive more ordered logs from these replicas
-	// ===============================================================
+	if finished {
+		tf.pavedTxs.RemoveLog(self)
+	}
+
+	if tf.pavedTxs.Len() == 0 {
+		tf.stopAppointingTimer()
+		tf.generateRawGraph()
+		tf.scanner()
+	}
+
+	// we are trying to generate relation graph
+	// and we need to receive more ordered logs to determinate the relation
 	return
 }
 
-func (tf *transactionsFilterImpl) relationInfo() {
+func (tf *transactionsFilterImpl) check(former, latter string) types.BeforeCheck {
+	cert := tf.getRelationCert(former, latter)
 
+	if cert.Finished {
+		// we have already finished the determination of the order between former and latter
+		return cert.Status
+	}
+
+	for id, vp := range tf.vpRecorder {
+		if cert.Scanned[id] {
+			continue
+		}
+		seqFormer, errFormer := vp.GetSequence(former)
+		seqLatter, errLatter := vp.GetSequence(latter)
+		if errFormer != nil || errLatter != nil {
+			// current replica's logs cannot determinate the order between former and latter
+			continue
+		}
+
+		// current scanned replica has provided effective relation reference
+		cert.Scanned[id] = true
+		if seqFormer < seqLatter {
+			// current replica believes that the former has a higher priority
+			cert.FormerPreferred++
+		} else {
+			// current replica believes that the latter has a higher priority
+			cert.LatterPreferred++
+		}
+
+		if cert.FormerPreferred > tf.moreThanHalf() {
+			// more than half replicas have decided the former one has a higher priority
+			cert.Status = types.FormerPriority
+			cert.Finished = true
+			break
+		}
+		if cert.LatterPreferred > tf.moreThanHalf() {
+			// more than half replicas have decided the latter one has a higher priority
+			cert.Status = types.LatterPriority
+			cert.Finished = true
+			break
+		}
+	}
+
+	return cert.Status
+}
+
+func (tf *transactionsFilterImpl) generateRawGraph() {
+	if tf.certStore == nil {
+		return
+	}
+
+	graph := make(map[string]map[string]bool)
+
+	for idr, cert := range tf.certStore {
+		if cert.Status == types.FormerPriority {
+			if graph[idr.From] == nil {
+				graph[idr.From] = make(map[string]bool)
+			}
+			graph[idr.From][idr.To] = true
+		}
+	}
+
+	tf.graphEngine <- graph
 }
