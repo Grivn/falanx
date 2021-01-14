@@ -1,13 +1,13 @@
 package utils
 
 import (
-	"github.com/Grivn/libfalanx/zcommon/protos"
+	pb "github.com/Grivn/libfalanx/zcommon/protos"
 )
 
 type ReplicaRecorder interface {
 	Counter() uint64
-	Check(r *protos.OrderedLog) bool
-	Update(r *protos.OrderedLog)
+	Check(r *pb.OrderedLog) bool
+	Update(r *pb.OrderedLog)
 }
 
 func NewReplicaRecorder() *replicaRecorderImpl {
@@ -18,11 +18,11 @@ func (rr *replicaRecorderImpl) Counter() uint64 {
 	return rr.counter
 }
 
-func (rr *replicaRecorderImpl) Check(r *protos.OrderedLog) bool {
+func (rr *replicaRecorderImpl) Check(r *pb.OrderedLog) bool {
 	return rr.check(r)
 }
 
-func (rr *replicaRecorderImpl) Update(r *protos.OrderedLog) {
+func (rr *replicaRecorderImpl) Update(r *pb.OrderedLog) {
 	rr.update(r)
 }
 
@@ -38,11 +38,11 @@ func newReplicaRecorderImpl() *replicaRecorderImpl {
 	return &replicaRecorderImpl{}
 }
 
-func (rr *replicaRecorderImpl) check(r *protos.OrderedLog) bool {
+func (rr *replicaRecorderImpl) check(r *pb.OrderedLog) bool {
 	return r.Sequence == rr.counter+1 && r.Timestamp > rr.timestamp
 }
 
-func (rr *replicaRecorderImpl) update(r *protos.OrderedLog) {
+func (rr *replicaRecorderImpl) update(r *pb.OrderedLog) {
 	rr.counter++
 	rr.timestamp = r.Timestamp
 }

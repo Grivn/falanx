@@ -2,12 +2,12 @@ package types
 
 import (
 	"github.com/Grivn/libfalanx/logger"
-	"github.com/Grivn/libfalanx/zcommon/protos"
+	pb "github.com/Grivn/libfalanx/zcommon/protos"
 )
 
 type Config struct {
 	ID     uint64
-	RecvC  chan *protos.OrderedLog
-	OrderC chan *protos.OrderedLog
+	RecvC  chan *pb.OrderedLog
+	OrderC chan *pb.OrderedLog
 	Logger logger.Logger
 }

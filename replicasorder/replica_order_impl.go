@@ -4,7 +4,7 @@ import (
 	"github.com/Grivn/libfalanx/logger"
 	"github.com/Grivn/libfalanx/replicasorder/types"
 	"github.com/Grivn/libfalanx/replicasorder/utils"
-	"github.com/Grivn/libfalanx/zcommon/protos"
+	pb "github.com/Grivn/libfalanx/zcommon/protos"
 )
 
 type replicaOrderImpl struct {
@@ -16,8 +16,8 @@ type replicaOrderImpl struct {
 	recorder utils.ReplicaRecorder // recorder si used to record the counter status of particular replica
 
 	// channel
-	orderC chan *protos.OrderedLog
-	recvC  chan *protos.OrderedLog
+	orderC chan *pb.OrderedLog
+	recvC  chan *pb.OrderedLog
 	close  chan bool
 
 	// essential tools ===========================================================
@@ -55,7 +55,7 @@ func (r *replicaOrderImpl) listenOrderedRequest() {
 	}
 }
 
-func (r *replicaOrderImpl) receiveOrderedLogs(l *protos.OrderedLog) {
+func (r *replicaOrderImpl) receiveOrderedLogs(l *pb.OrderedLog) {
 	if r == nil {
 		r.logger.Warningf("Nil ordered request from client %d", r.id)
 		return
@@ -73,7 +73,7 @@ func (r *replicaOrderImpl) receiveOrderedLogs(l *protos.OrderedLog) {
 }
 
 // cacheRequest is used to save the requests temporarily unable to process because of its sequence number
-func (r *replicaOrderImpl) cacheRequest(l *protos.OrderedLog) {
+func (r *replicaOrderImpl) cacheRequest(l *pb.OrderedLog) {
 	if r.cache.Has(l.Sequence) {
 		r.logger.Warningf("Duplicated log-sequence %d from replica", l.Sequence)
 		return
@@ -96,7 +96,7 @@ func (r *replicaOrderImpl) orderCachedRequests() uint64 {
 	return r.recorder.Counter()
 }
 
-func (r *replicaOrderImpl) postOrderedLogs(log *protos.OrderedLog) {
+func (r *replicaOrderImpl) postOrderedLogs(log *pb.OrderedLog) {
 	r.logger.Debugf("Post log %v from replica %d", log, log.ReplicaId)
 	r.orderC <- log
 }

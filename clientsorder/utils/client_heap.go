@@ -3,16 +3,16 @@ package utils
 import (
 	"container/heap"
 
-	"github.com/Grivn/libfalanx/zcommon/protos"
+	pb "github.com/Grivn/libfalanx/zcommon/protos"
 )
 
 // ================ CacheReq Interfaces ==================
 type CacheReq interface {
 	Len() int
 	Has(seq uint64) bool
-	Top() *protos.OrderedReq
-	Push(r *protos.OrderedReq)
-	Pop() *protos.OrderedReq
+	Top() *pb.OrderedReq
+	Push(r *pb.OrderedReq)
+	Pop() *pb.OrderedReq
 }
 
 type cacheReqImpl struct {
@@ -20,13 +20,13 @@ type cacheReqImpl struct {
 	heap *ReqHeap
 
 	// presence indicates whether a request exists
-	presence map[uint64]*protos.OrderedReq
+	presence map[uint64]*pb.OrderedReq
 }
 
 func NewReqCache() *cacheReqImpl {
 	cache := &cacheReqImpl{
 		heap:     &ReqHeap{},
-		presence: make(map[uint64]*protos.OrderedReq),
+		presence: make(map[uint64]*pb.OrderedReq),
 	}
 	heap.Init(cache.heap)
 	return cache
@@ -41,20 +41,20 @@ func (c *cacheReqImpl) Has(seq uint64) bool {
 	return ok
 }
 
-func (c *cacheReqImpl) Top() *protos.OrderedReq {
+func (c *cacheReqImpl) Top() *pb.OrderedReq {
 	r := c.heap.top()
 	if r == nil {
 		return nil
 	}
 
-	ret, ok := r.(*protos.OrderedReq)
+	ret, ok := r.(*pb.OrderedReq)
 	if !ok {
 		return nil
 	}
 	return ret
 }
 
-func (c *cacheReqImpl) Push(r *protos.OrderedReq) {
+func (c *cacheReqImpl) Push(r *pb.OrderedReq) {
 	seq := r.Sequence
 	if c.Has(seq) {
 		return
@@ -64,11 +64,11 @@ func (c *cacheReqImpl) Push(r *protos.OrderedReq) {
 	c.presence[seq] = r
 }
 
-func (c *cacheReqImpl) Pop() *protos.OrderedReq {
+func (c *cacheReqImpl) Pop() *pb.OrderedReq {
 	if c.heap.Len() == 0 {
 		return nil
 	}
-	r, ok := c.heap.Pop().(*protos.OrderedReq)
+	r, ok := c.heap.Pop().(*pb.OrderedReq)
 	if !ok {
 		return nil
 	}
@@ -77,7 +77,7 @@ func (c *cacheReqImpl) Pop() *protos.OrderedReq {
 }
 
 // ======================= heap Interfaces ==============================
-type ReqHeap []*protos.OrderedReq
+type ReqHeap []*pb.OrderedReq
 
 // Len is the number of elements in the collection.
 func (h ReqHeap) Len() int {
@@ -105,7 +105,7 @@ func (h *ReqHeap) Pop() interface{} {
 // Push pushes the element x onto the heap.
 // The complexity is O(log n) where n = h.Len().
 func (h *ReqHeap) Push(x interface{}) {
-	*h = append(*h, x.(*protos.OrderedReq))
+	*h = append(*h, x.(*pb.OrderedReq))
 }
 
 // ======================= Essential Functions ==============================

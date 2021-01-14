@@ -11,17 +11,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8076577a-4287-45be-8e84-c500e465776e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/falanx/external/external.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/falanx/falanx.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientsorder/client_order.go" beforeDir="false" afterPath="$PROJECT_DIR$/clientsorder/client_order.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/falanx/falanx_impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/falanx/falanx_impl.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/falanx/interface.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/localorder/local_order_impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/localorder/local_order_impl.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/network/interface.go" beforeDir="false" afterPath="$PROJECT_DIR$/network/interface.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/replicasorder/replica_order.go" beforeDir="false" afterPath="$PROJECT_DIR$/replicasorder/replica_order.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/replicasorder/replica_order_impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/replicasorder/replica_order_impl.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/txcontainer/txs_container.go" beforeDir="false" afterPath="$PROJECT_DIR$/txcontainer/txs_container.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/txcontainer/txs_container_impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/txcontainer/txs_container_impl.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

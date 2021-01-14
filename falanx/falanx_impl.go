@@ -9,7 +9,7 @@ import (
 	replicaOrderType "github.com/Grivn/libfalanx/replicasorder/types"
 	"github.com/Grivn/libfalanx/txcontainer"
 	containerType "github.com/Grivn/libfalanx/txcontainer/types"
-	"github.com/Grivn/libfalanx/zcommon/protos"
+	pb "github.com/Grivn/libfalanx/zcommon/protos"
 	"github.com/Grivn/libfalanx/zcommon/types"
 	fCommonProto "github.com/ultramesh/flato-common/types/protos"
 )
@@ -55,12 +55,12 @@ type falanxImpl struct {
 	// ordered_log (by order) ---> logOrderC -----------> filter
 	// in filter, we will collect the logs from different replicasOrder and generate the relation graph)
 	txC         chan *fCommonProto.Transaction
-	reqC        chan *protos.OrderedReq
-	logC        chan *protos.OrderedLog
-	reqRecvC    map[uint64]chan *protos.OrderedReq
+	reqC        chan *pb.OrderedReq
+	logC        chan *pb.OrderedLog
+	reqRecvC    map[uint64]chan *pb.OrderedReq
 	reqOrderC   chan string
-	logRecvC    map[uint64]chan *protos.OrderedLog
-	logOrderC   chan *protos.OrderedLog
+	logRecvC    map[uint64]chan *pb.OrderedLog
+	logOrderC   chan *pb.OrderedLog
 	close       chan bool
 
 	// essential =====================================================================================
@@ -68,10 +68,10 @@ type falanxImpl struct {
 }
 
 func newFalanxImpl(c types.Config) *falanxImpl {
-	reqRecvC := make(map[uint64]chan *protos.OrderedReq)
-	logRecvC := make(map[uint64]chan *protos.OrderedLog)
+	reqRecvC := make(map[uint64]chan *pb.OrderedReq)
+	logRecvC := make(map[uint64]chan *pb.OrderedLog)
 	reqOrderC := make(chan string)
-	logOrderC := make(chan *protos.OrderedLog)
+	logOrderC := make(chan *pb.OrderedLog)
 
 	// initialize the tx container
 	containerConfig := containerType.Config{
@@ -84,7 +84,7 @@ func newFalanxImpl(c types.Config) *falanxImpl {
 	replicasOrder := make(map[uint64]external.ModuleControl)
 	for i:=0; i<c.N; i++ {
 		id := uint64(i+1)
-		recvC := make(chan *protos.OrderedLog)
+		recvC := make(chan *pb.OrderedLog)
 		replicaConfig := replicaOrderType.Config{
 			ID:     id,
 			RecvC:  recvC,
@@ -124,7 +124,7 @@ func (falanx *falanxImpl) stop() {
 	close(falanx.close)
 }
 
-func (falanx *falanxImpl) step() {
+func (falanx *falanxImpl) step(payload []byte) {
 
 }
 
@@ -152,7 +152,7 @@ func (falanx *falanxImpl) listenOrderedReqs() {
 	}
 }
 
-func (falanx *falanxImpl) processOrderedReqs(req *protos.OrderedReq) {
+func (falanx *falanxImpl) processOrderedReqs(req *pb.OrderedReq) {
 	recvC, ok := falanx.reqRecvC[req.ClientId]
 	if ok {
 		recvC <- req
@@ -160,7 +160,7 @@ func (falanx *falanxImpl) processOrderedReqs(req *protos.OrderedReq) {
 	}
 
 	// initialize a new client order for particular client
-	initC := make(chan *protos.OrderedReq)
+	initC := make(chan *pb.OrderedReq)
 	config := clientOrderType.Config{
 		ID:     req.ClientId,
 		RecvC:  initC,
@@ -185,7 +185,7 @@ func (falanx *falanxImpl) listenOrderedLogs() {
 	}
 }
 
-func (falanx *falanxImpl) processOrderedLogs(log *protos.OrderedLog) {
+func (falanx *falanxImpl) processOrderedLogs(log *pb.OrderedLog) {
 	recvC, ok := falanx.logRecvC[log.ReplicaId]
 	if ok {
 		recvC <- log

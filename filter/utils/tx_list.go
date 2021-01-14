@@ -4,21 +4,21 @@ import (
 	"container/list"
 	"errors"
 
-	"github.com/Grivn/libfalanx/zcommon/protos"
+	pb "github.com/Grivn/libfalanx/zcommon/protos"
 )
 
 // Recorder List Interfaces ===========================================
 type TxList interface {
 	// list controller
-	Add(l *protos.OrderedLog)
+	Add(l *pb.OrderedLog)
 	Has(key string) bool
 	Front() *list.Element
 	Remove(e *list.Element, key string) error
 	Len() int
 
 	// value controller
-	FrontLog() *protos.OrderedLog
-	GetLog(key string) *protos.OrderedLog
+	FrontLog() *pb.OrderedLog
+	GetLog(key string) *pb.OrderedLog
 	GetSequence(key string) (uint64, error)
 	GetTimestamp(key string) (int64, error)
 	RemoveLog(txHash string)
@@ -29,11 +29,11 @@ func NewTxList() *txListImpl {
 	return newTxListImpl()
 }
 
-func (list *txListImpl) Add(l *protos.OrderedLog) {
+func (list *txListImpl) Add(l *pb.OrderedLog) {
 	list.add(l)
 }
 
-func (list *txListImpl) GetLog(key string) *protos.OrderedLog {
+func (list *txListImpl) GetLog(key string) *pb.OrderedLog {
 	return list.getLog(key)
 }
 
@@ -57,7 +57,7 @@ func (list *txListImpl) Front() *list.Element {
 	return list.front()
 }
 
-func (list *txListImpl) FrontLog() *protos.OrderedLog {
+func (list *txListImpl) FrontLog() *pb.OrderedLog {
 	return list.frontLog()
 }
 
@@ -80,7 +80,7 @@ func newTxListImpl() *txListImpl {
 	return &txListImpl{}
 }
 
-func (list *txListImpl) add(l *protos.OrderedLog) {
+func (list *txListImpl) add(l *pb.OrderedLog) {
 	if list.has(l.TxHash) {
 		return
 	}
@@ -96,12 +96,12 @@ func (list *txListImpl) get(key string) *list.Element {
 	return e
 }
 
-func (list *txListImpl) getLog(key string) *protos.OrderedLog {
+func (list *txListImpl) getLog(key string) *pb.OrderedLog {
 	e := list.get(key)
 	if e == nil {
 		return nil
 	}
-	r, ok := e.Value.(*protos.OrderedLog)
+	r, ok := e.Value.(*pb.OrderedLog)
 	if !ok {
 		return nil
 	}
@@ -144,8 +144,8 @@ func (list *txListImpl) remove(e *list.Element, key string) error {
 	return nil
 }
 
-func (list *txListImpl) frontLog() *protos.OrderedLog {
-	log, ok := list.front().Value.(*protos.OrderedLog)
+func (list *txListImpl) frontLog() *pb.OrderedLog {
+	log, ok := list.front().Value.(*pb.OrderedLog)
 	if !ok {
 		return nil
 	}

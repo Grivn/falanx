@@ -8,7 +8,7 @@ import (
 
 	"github.com/Grivn/libfalanx/filter/utils"
 	"github.com/Grivn/libfalanx/logger"
-	"github.com/Grivn/libfalanx/zcommon/protos"
+	pb "github.com/Grivn/libfalanx/zcommon/protos"
 )
 
 type transactionsFilterImpl struct {
@@ -113,7 +113,7 @@ type transactionsFilterImpl struct {
 	// gatheredTxs, txRecorder -- appointing -------> timeout or appointedTxs
 	// appointedTxs ------------- graphEngine ------> graph_engine
 	//
-	replicaOrder chan *protos.OrderedLog
+	replicaOrder chan *pb.OrderedLog
 	graphEngine  chan interface{}
 
 	graph map[string]map[string]bool
@@ -211,7 +211,7 @@ func (tf *transactionsFilterImpl) listenTimerEvent() {
 	}
 }
 
-func (tf *transactionsFilterImpl) add(l *protos.OrderedLog) {
+func (tf *transactionsFilterImpl) add(l *pb.OrderedLog) {
 
 	if !tf.verifiedTxs.Has(l.TxHash) {
 		// there is an unverified tx, append it into the pending tx set
@@ -333,7 +333,7 @@ func (tf *transactionsFilterImpl) pavingScanner() {
 			)
 			i := 0
 			for element := tf.pavedTxs.Front(); i < tf.pavedTxs.Len(); element = next {
-				log, ok := element.Value.(*protos.OrderedLog)
+				log, ok := element.Value.(*pb.OrderedLog)
 				if !ok {
 					return
 				}

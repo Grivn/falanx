@@ -1,6 +1,23 @@
 syntax = "proto3";
 
-package protos;
+package falanxpb;
+
+import "github.com/ultramesh/flato-common/types/protos/transaction.proto";
+
+enum Type {
+  REQUEST_SET = 0;
+  ORDERED_REQ = 1;
+  ORDERED_LOG = 2;
+}
+
+message consensus_message {
+  Type type = 1;
+  bytes payload = 2;
+}
+
+message request_set {
+  repeated protos.Transaction requests = 1;
+}
 
 message ordered_log {
   uint64 replica_id = 1;

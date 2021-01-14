@@ -1,12 +1,13 @@
 package localorder
 
 import (
+	"github.com/golang/protobuf/proto"
 	"time"
 
 	"github.com/Grivn/libfalanx/localorder/types"
 	"github.com/Grivn/libfalanx/logger"
 	"github.com/Grivn/libfalanx/network"
-	"github.com/Grivn/libfalanx/zcommon/protos"
+	pb "github.com/Grivn/libfalanx/zcommon/protos"
 )
 
 type localOrderImpl struct {
@@ -50,11 +51,19 @@ func (local *localOrderImpl) listenTxHash() {
 
 func (local *localOrderImpl) order(txHash string) {
 	local.seqNo++
-	log := &protos.OrderedLog{
+	log := &pb.OrderedLog{
 		ReplicaId: local.id,
 		Sequence:  local.seqNo,
 		TxHash:    txHash,
 		Timestamp: time.Now().UnixNano(),
 	}
-	local.network.BroadcastOrderedLog(log)
+	logPayload, err := proto.Marshal(log)
+	if err != nil {
+		return
+	}
+	logMsg := &pb.ConsensusMessage{
+		Type:    pb.Type_ORDERED_LOG,
+		Payload: logPayload,
+	}
+	local.network.Broadcast(logMsg)
 }

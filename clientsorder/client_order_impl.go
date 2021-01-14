@@ -4,7 +4,7 @@ import (
 	"github.com/Grivn/libfalanx/clientsorder/types"
 	"github.com/Grivn/libfalanx/clientsorder/utils"
 	"github.com/Grivn/libfalanx/logger"
-	"github.com/Grivn/libfalanx/zcommon/protos"
+	pb "github.com/Grivn/libfalanx/zcommon/protos"
 )
 
 type clientOrderImpl struct {
@@ -20,7 +20,7 @@ type clientOrderImpl struct {
 
 	// message channel ===========================================================
 	orderC chan string // orderC is used to trigger local log sort
-	recvC  chan *protos.OrderedReq
+	recvC  chan *pb.OrderedReq
 	close  chan bool
 
 	// essential tools ===========================================================
@@ -59,7 +59,7 @@ func (c *clientOrderImpl) listenOrderedRequest() {
 	}
 }
 
-func (c *clientOrderImpl) receiveOrderedRequest(r *protos.OrderedReq) {
+func (c *clientOrderImpl) receiveOrderedRequest(r *pb.OrderedReq) {
 	if r == nil {
 		c.logger.Warningf("Nil ordered request from client %d", c.id)
 		return
@@ -77,7 +77,7 @@ func (c *clientOrderImpl) receiveOrderedRequest(r *protos.OrderedReq) {
 }
 
 // cache is used to save the requests temporarily unable to process because of its sequence number
-func (c *clientOrderImpl) cacheRequest(r *protos.OrderedReq) {
+func (c *clientOrderImpl) cacheRequest(r *pb.OrderedReq) {
 	if c.cache.Has(r.Sequence) {
 		c.logger.Warningf("Duplicated req-sequence %d from client", r.Sequence)
 		return

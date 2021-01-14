@@ -3,13 +3,13 @@ package types
 import (
 	"github.com/Grivn/libfalanx/logger"
 	"github.com/Grivn/libfalanx/zcommon"
-	"github.com/Grivn/libfalanx/zcommon/protos"
+	pb "github.com/Grivn/libfalanx/zcommon/protos"
 )
 
 type Config struct {
 	Replicas []int
 
-	Order  chan *protos.OrderedLog
+	Order  chan *pb.OrderedLog
 	Graph  chan interface{}
 
 	Logger logger.Logger
