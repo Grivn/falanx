@@ -1,80 +1,15 @@
 package fakeclient
 
 import (
-	"github.com/golang/protobuf/proto"
-	"time"
-
-	"github.com/Grivn/libfalanx/zcommon"
-	pb "github.com/Grivn/libfalanx/zcommon/protos"
 	"github.com/Grivn/libfalanx/fakeclient/types"
-	"github.com/Grivn/libfalanx/logger"
-	"github.com/Grivn/libfalanx/network"
 
 	fCommonProto "github.com/ultramesh/flato-common/types/protos"
 )
 
-type clientImpl struct {
-	id uint64
-	n  uint64
-	f  uint64
-
-	txs map[string]*fCommonProto.Transaction
-	seq uint64
-
-	res map[string]map[uint64]bool
-
-	tools  zcommon.Tools
-	sender network.Network
-	logger logger.Logger
+func NewClient(c types.Config) *clientImpl {
+	return newClientImpl(c)
 }
 
-func NewClient(config types.Config) *clientImpl {
-	return &clientImpl{
-		id:     config.ID,
-		txs:    make(map[string]*fCommonProto.Transaction),
-		seq:    uint64(0),
-		tools:  config.Tools,
-		sender: config.Sender,
-		logger: config.Logger,
-	}
-}
-
-func (c *clientImpl) Propose(txs []*fCommonProto.Transaction) {
-	hashList := make([]string, len(txs))
-	for index, tx := range txs {
-		hash := c.tools.TransactionHash(tx)
-		hashList[index] = hash
-	}
-
-	c.seq++
-	set := &pb.RequestSet{
-		Requests: txs,
-	}
-	req := &pb.OrderedReq{
-		ClientId:   c.id,
-		Sequence:   c.seq,
-		TxHashList: hashList,
-		Timestamp:  time.Now().UnixNano(),
-	}
-	c.logger.Infof("Client %d broadcast ordered request: [seq]%d, [hash list]%v", req.Sequence, req.TxHashList)
-
-	txsPayload, err := proto.Marshal(set)
-	if err != nil {
-		return
-	}
-	txsMsg := &pb.ConsensusMessage{
-		Type:    pb.Type_REQUEST_SET,
-		Payload: txsPayload,
-	}
-	c.sender.Broadcast(txsMsg)
-
-	reqPayload, err := proto.Marshal(req)
-	if err != nil {
-		return
-	}
-	reqMsg := &pb.ConsensusMessage{
-		Type:    pb.Type_ORDERED_REQ,
-		Payload: reqPayload,
-	}
-	c.sender.Broadcast(reqMsg)
+func (c *clientImpl) ProposeTxs(txs []*fCommonProto.Transaction) {
+	c.propose(txs)
 }

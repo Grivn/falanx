@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/Grivn/libfalanx/logger"
+	"github.com/Grivn/libfalanx/network"
 	"github.com/Grivn/libfalanx/zcommon"
 	pb "github.com/Grivn/libfalanx/zcommon/protos"
 	fCommonProto "github.com/ultramesh/flato-common/types/protos"
@@ -13,6 +14,7 @@ type Config struct {
 	TxC    chan *fCommonProto.Transaction
 	ReqC   chan *pb.OrderedReq
 	LogC   chan *pb.OrderedLog
+	Sender network.Network
 	Tools  zcommon.Tools
 	Logger logger.Logger
 }

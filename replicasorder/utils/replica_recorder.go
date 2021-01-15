@@ -39,6 +39,9 @@ func newReplicaRecorderImpl() *replicaRecorderImpl {
 }
 
 func (rr *replicaRecorderImpl) check(r *pb.OrderedLog) bool {
+	if r == nil {
+		return false
+	}
 	return r.Sequence == rr.counter+1 && r.Timestamp > rr.timestamp
 }
 

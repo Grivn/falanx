@@ -36,39 +36,35 @@ func newGraphEngineImpl(graphEngine chan interface{}) *graphEngineImpl {
 	}
 }
 
-func (ge *graphEngineImpl) start() {
-	go ge.listenEvent()
+func (g *graphEngineImpl) start() {
+	go g.listenEvent()
 }
 
-func (ge *graphEngineImpl) stop() {
-	close(ge.close)
+func (g *graphEngineImpl) stop() {
+	close(g.close)
 }
 
-func (ge *graphEngineImpl) listenEvent() {
+func (g *graphEngineImpl) listenEvent() {
 	for {
 		select {
-		case <-ge.close:
+		case <-g.close:
 			return
 
-		case event := <-ge.graphEngine:
+		case event := <-g.graphEngine:
 			switch e := event.(type) {
-			case map[string]map[string]bool:
-				ge.printGraph(e)
+			case map[string][]string:
+				g.printGraph(e)
 			}
 		}
 	}
 }
 
-func (ge *graphEngineImpl) printGraph(graph map[string]map[string]bool) {
+func (g *graphEngineImpl) printGraph(graph map[string][]string) {
 	for from := range graph {
-		toMap := graph[from]
-		if toMap == nil {
-			ge.logger.Debugf("out degree is 0")
-			continue
-		}
-		ge.logger.Debugf("out degree is %d:", len(toMap))
-		for to := range toMap {
-			ge.logger.Debugf("    ===> %s", to)
+		toList := graph[from]
+		g.logger.Noticef("%s out degree is %d", from, len(toList))
+		for to := range toList {
+			g.logger.Noticef("    ===> %s", to)
 		}
 	}
 }

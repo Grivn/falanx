@@ -6,14 +6,26 @@
         <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
         <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
       </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:demo" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
     </expand>
-    <select />
+    <select>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:demo" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:demo/refactor" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </select>
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8076577a-4287-45be-8e84-c500e465776e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/localorder/local_order_impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/localorder/local_order_impl.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/network/interface.go" beforeDir="false" afterPath="$PROJECT_DIR$/network/interface.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/falanx/falanx_impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/falanx/falanx_impl.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filter/filter_impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/filter/filter_impl.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +89,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="demo/refactor" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -108,6 +132,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="398" y="259" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1440.900@0.0.1440.900" timestamp="1608874034490" />
+    <state x="100" y="100" width="1240" height="700" key="DiffContextDialog" timestamp="1610695104197">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="100" y="100" width="1240" height="700" key="DiffContextDialog/0.0.1440.900@0.0.1440.900" timestamp="1610695104197" />
     <state x="619" y="319" key="EnvironmentVariablesDialog" timestamp="1608885691057">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -120,6 +148,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="221" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1608885692128" />
+    <state x="100" y="100" width="1240" height="700" key="ShowDiffWithBranchDialog" timestamp="1610695104199">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="100" y="100" width="1240" height="700" key="ShowDiffWithBranchDialog/0.0.1440.900@0.0.1440.900" timestamp="1610695104199" />
     <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1610183330828">
       <screen x="0" y="0" width="1440" height="900" />
     </state>

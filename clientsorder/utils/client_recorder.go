@@ -37,6 +37,9 @@ func newClientRecorderImpl() *clientRecorderImpl {
 }
 
 func (cr *clientRecorderImpl) check(r *pb.OrderedReq) bool {
+	if r == nil {
+		return false
+	}
 	return r.Sequence == cr.counter+1 && r.Timestamp > cr.timestamp
 }
 

@@ -19,6 +19,7 @@ type TxList interface {
 	// value controller
 	FrontLog() *pb.OrderedLog
 	GetLog(key string) *pb.OrderedLog
+	GetLogBySeq(seq uint64) *pb.OrderedLog
 	GetSequence(key string) (uint64, error)
 	GetTimestamp(key string) (int64, error)
 	RemoveLog(txHash string)
@@ -31,6 +32,10 @@ func NewTxList() *txListImpl {
 
 func (list *txListImpl) Add(l *pb.OrderedLog) {
 	list.add(l)
+}
+
+func (list *txListImpl) GetLogBySeq(seq uint64) *pb.OrderedLog {
+	return list.getLogBySeq(seq)
 }
 
 func (list *txListImpl) GetLog(key string) *pb.OrderedLog {
@@ -74,10 +79,16 @@ type txListImpl struct {
 	list *list.List
 	// presence indicates the elements in log list
 	presence map[string]*list.Element
+	// content
+	content  map[uint64]*list.Element
 }
 
 func newTxListImpl() *txListImpl {
-	return &txListImpl{}
+	return &txListImpl{
+		list:     list.New(),
+		presence: make(map[string]*list.Element),
+		content:  make(map[uint64]*list.Element),
+	}
 }
 
 func (list *txListImpl) add(l *pb.OrderedLog) {
@@ -86,6 +97,7 @@ func (list *txListImpl) add(l *pb.OrderedLog) {
 	}
 	e := list.list.PushBack(l)
 	list.presence[l.TxHash] = e
+	list.content[l.Sequence] = e
 }
 
 func (list *txListImpl) get(key string) *list.Element {
@@ -94,6 +106,14 @@ func (list *txListImpl) get(key string) *list.Element {
 		return nil
 	}
 	return e
+}
+
+func (list *txListImpl) getLogBySeq(seq uint64) *pb.OrderedLog {
+	log, ok := list.content[seq]
+	if !ok {
+		return nil
+	}
+	return log.Value.(*pb.OrderedLog)
 }
 
 func (list *txListImpl) getLog(key string) *pb.OrderedLog {
@@ -141,6 +161,7 @@ func (list *txListImpl) remove(e *list.Element, key string) error {
 	}
 	list.list.Remove(e)
 	delete(list.presence, key)
+	delete(list.content, e.Value.(*pb.OrderedLog).Sequence)
 	return nil
 }
 

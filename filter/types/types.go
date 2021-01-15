@@ -38,5 +38,5 @@ type RelationCert struct {
 }
 
 const (
-	DefaultGraphSize = 20
+	DefaultGraphSize = 5
 )
