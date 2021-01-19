@@ -19,10 +19,10 @@ func (falanx *falanxImpl) StopFalanx() {
 }
 
 func (falanx *falanxImpl) StepMessage(msg *pb.ConsensusMessage) {
-	go falanx.step(msg)
+	falanx.step(msg)
 }
 
 func (falanx *falanxImpl) Propose(txs []*fCommonProto.Transaction) {
-	falanx.fakeClient.ProposeTxs(txs)
+	falanx.forwardClient.ProposeTxs(txs)
 	return
 }

@@ -25,7 +25,6 @@
     <list default="true" id="8076577a-4287-45be-8e84-c500e465776e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/falanx/falanx_impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/falanx/falanx_impl.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/filter/filter_impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/filter/filter_impl.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +65,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/filter" />
-    <property name="settings.editor.selected.configurable" value="go.vgo" />
+    <property name="settings.editor.selected.configurable" value="reference.settings.project.statistic.project.settings" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -124,6 +123,10 @@
     </environment>
   </component>
   <component name="WindowStateProjectService">
+    <state x="320" y="98" key="#Plugins" timestamp="1611043352081">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="320" y="98" key="#Plugins/0.0.1440.900@0.0.1440.900" timestamp="1611043352081" />
     <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1608813354528">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -132,6 +135,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="398" y="259" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1440.900@0.0.1440.900" timestamp="1608874034490" />
+    <state x="408" y="193" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1610876762626">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="408" y="193" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1440.900@0.0.1440.900" timestamp="1610876762626" />
     <state x="100" y="100" width="1240" height="700" key="DiffContextDialog" timestamp="1610695104197">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -144,17 +151,17 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="488" y="159" key="RollbackChangesDialog/0.0.1440.900@0.0.1440.900" timestamp="1610595603517" />
-    <state x="221" y="89" key="SettingsEditor" timestamp="1608885692128">
+    <state x="221" y="89" key="SettingsEditor" timestamp="1611043767847">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="221" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1608885692128" />
+    <state x="221" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1611043767847" />
     <state x="100" y="100" width="1240" height="700" key="ShowDiffWithBranchDialog" timestamp="1610695104199">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="100" y="100" width="1240" height="700" key="ShowDiffWithBranchDialog/0.0.1440.900@0.0.1440.900" timestamp="1610695104199" />
-    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1610183330828">
+    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1611043316735">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1610183330828" />
+    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1611043316735" />
   </component>
 </project>

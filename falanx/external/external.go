@@ -16,6 +16,6 @@ type TxsContainer interface {
 	Remove(txHash string) error
 }
 
-type FakeClient interface {
+type ForwardClient interface {
 	ProposeTxs(txs []*fCommonProto.Transaction)
 }

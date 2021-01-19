@@ -1,7 +1,7 @@
-package fakeclient
+package forwardclient
 
 import (
-	"github.com/Grivn/libfalanx/fakeclient/types"
+	"github.com/Grivn/libfalanx/forwardclient/types"
 
 	fCommonProto "github.com/ultramesh/flato-common/types/protos"
 )

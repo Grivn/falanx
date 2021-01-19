@@ -82,6 +82,7 @@ func (c *clientOrderImpl) cacheRequest(r *pb.OrderedReq) {
 		c.logger.Warningf("Duplicated req-sequence %d from client", r.Sequence)
 		return
 	}
+	c.logger.Infof("[C-Cache] receive req from client %d, seq %d", r.ClientId, r.Sequence)
 	c.cache.Push(r)
 }
 
@@ -93,8 +94,6 @@ func (c *clientOrderImpl) orderCachedRequests() uint64 {
 	for c.recorder.Check(c.cache.Top()) {
 		r := c.cache.Pop()
 		c.recorder.Update(r)
-		c.logger.Debugf("Read request cache of client %d, counter %d, tx %v",
-			c.id, c.recorder.Counter(), r.TxHashList)
 		c.postOrderedTxs(r.TxHashList)
 	}
 	return c.recorder.Counter()
@@ -102,7 +101,11 @@ func (c *clientOrderImpl) orderCachedRequests() uint64 {
 
 func (c *clientOrderImpl) postOrderedTxs(list []string) {
 	for _, txHash := range list {
-		c.logger.Debugf("Post request %s from client %d", txHash, c.id)
-		c.orderC <- txHash
+		c.logger.Noticef("Post request %s from client %d", txHash, c.id)
+		c.postTx(txHash)
 	}
+}
+
+func (c *clientOrderImpl) postTx(txHash string) {
+	c.orderC <- txHash
 }

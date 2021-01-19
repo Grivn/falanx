@@ -3,11 +3,11 @@ package falanx
 import (
 	"github.com/Grivn/libfalanx/clientsorder"
 	clientOrderType "github.com/Grivn/libfalanx/clientsorder/types"
-	"github.com/Grivn/libfalanx/fakeclient"
-	fakeClientType "github.com/Grivn/libfalanx/fakeclient/types"
 	"github.com/Grivn/libfalanx/falanx/external"
 	"github.com/Grivn/libfalanx/filter"
 	filterType "github.com/Grivn/libfalanx/filter/types"
+	"github.com/Grivn/libfalanx/forwardclient"
+	fakeClientType "github.com/Grivn/libfalanx/forwardclient/types"
 	"github.com/Grivn/libfalanx/graphengine"
 	"github.com/Grivn/libfalanx/localorder"
 	localOrderType "github.com/Grivn/libfalanx/localorder/types"
@@ -18,8 +18,8 @@ import (
 	containerType "github.com/Grivn/libfalanx/txcontainer/types"
 	pb "github.com/Grivn/libfalanx/zcommon/protos"
 	"github.com/Grivn/libfalanx/zcommon/types"
+
 	"github.com/golang/protobuf/proto"
-	fCommonProto "github.com/ultramesh/flato-common/types/protos"
 )
 
 type falanxImpl struct {
@@ -28,10 +28,14 @@ type falanxImpl struct {
 	id uint64
 
 	// modules =======================================================================================
+	// forwardClient: used to forward the txs send from the clients which trust current replica
 	// txContainer:   used to contain the transactions
+	// localOrder:    used to generate current node's ordered logs
 	// clientsOrder:  used to process the ordered requests from clients
 	// replicasOrder: used to process the ordered logs from replicas
-	fakeClient    external.FakeClient
+	// txFilter:      used to generate graph
+	// graphEngine:   used to deal with the raw graph
+	forwardClient external.ForwardClient
 	txContainer   external.TxsContainer
 	localOrder    external.ModuleControl
 	clientsOrder  map[uint64]external.ModuleControl
@@ -42,33 +46,23 @@ type falanxImpl struct {
 	// channel =======================================================================================
 	// the channels which will be used to deliver messages between different modules
 	//
-	// external channel
-	// txC:  receive the transactions from network
-	// reqC: receive the ordered requests from network
-	// logC: receive the ordered logs from network
-	//
 	// internal channel
 	// reqRecvC:  dispatch the ordered requests to specific client order module
 	// reqOrderC: collect the ordered txHash from different client and deliver them to local order module
 	// reqRecvC:  dispatch the ordered logs to specific replica order module
 	// reqOrderC: collect the ordered logs from different replica and deliver them to filter module
 	//
-	// network ------------------> reqC ------------------> ordered_req
-	// ordered_req --------------> reqRecvC -------------> clients_order
-	// clients_order will generate the txHash by order
+	// ordered_req ---> reqRecvC ---> clientsOrder
+	// the ordered reqs will be picked from clientsOrder one by one
 	//
-	// txHash (by order) --------> reqOrderC ------------> local_order
-	// local_order will order the txHash from client and broadcast ordered_logs
+	// txHash --------> reqOrderC --> localOrder
+	// localOrder will order the txHash from client and broadcast ordered logs
 	//
-	// network ------------------> logC ------------------> ordered_log
-	// ordered_log --------------> logRecvC ------------> replicas_order
-	// replicas_order will generate the logs by order
+	// ordered_log ---> logRecvC ---> replicasOrder
+	// the ordered logs will be picked from replicasOrder one by one
 	//
-	// ordered_log (by order) ---> logOrderC -----------> filter
-	// in filter, we will collect the logs from different replicasOrder and generate the relation graph)
-	txC         chan *fCommonProto.Transaction
-	reqC        chan *pb.OrderedReq
-	logC        chan *pb.OrderedLog
+	// ordered_log ---> logOrderC --> txFilter
+	// txFilter will collect the logs from different replicasOrder and generate a graph
 	reqRecvC    map[uint64]chan *pb.OrderedReq
 	reqOrderC   chan string
 	logRecvC    map[uint64]chan *pb.OrderedLog
@@ -86,15 +80,6 @@ func newFalanxImpl(c types.Config) *falanxImpl {
 	logOrderC := make(chan *pb.OrderedLog)
 	graphC := make(chan interface{})
 
-	// client
-	clientConfig := fakeClientType.Config{
-		ID:     c.ID,
-		Tools:  c.Tools,
-		Sender: c.Sender,
-		Logger: c.Logger,
-	}
-	fakeClient := fakeclient.NewClient(clientConfig)
-
 	// initialize the tx container
 	containerConfig := containerType.Config{
 		Logger: c.Logger,
@@ -102,21 +87,27 @@ func newFalanxImpl(c types.Config) *falanxImpl {
 	}
 	txContainer := txcontainer.NewTxContainer(containerConfig)
 
-	// local order
-	localConfig := localOrderType.Config{
-		ID:      c.ID,
-		RecvC:   reqOrderC,
-		Network: c.Sender,
-		Logger:  c.Logger,
+	// initialize the client order
+	clientsOrder := make(map[uint64]external.ModuleControl)
+	for i:=0; i<c.N; i++ {
+		id := uint64(i+1)
+		recvC := make(chan *pb.OrderedReq, types.DefaultChannelLen)
+		clientConfig := clientOrderType.Config{
+			ID:     id,
+			RecvC:  recvC,
+			OrderC: reqOrderC,
+			Logger: c.Logger,
+		}
+		reqRecvC[id] = recvC
+		clientsOrder[id] = clientsorder.NewClientOrder(clientConfig)
 	}
-	localOrder := localorder.NewLocalOrder(localConfig)
 
 	// initialize the replica order
 	var replicas []int
 	replicasOrder := make(map[uint64]external.ModuleControl)
 	for i:=0; i<c.N; i++ {
 		id := uint64(i+1)
-		recvC := make(chan *pb.OrderedLog)
+		recvC := make(chan *pb.OrderedLog, types.DefaultChannelLen)
 		replicaConfig := replicaOrderType.Config{
 			ID:     id,
 			RecvC:  recvC,
@@ -127,6 +118,26 @@ func newFalanxImpl(c types.Config) *falanxImpl {
 		replicasOrder[id] = replicasorder.NewReplicaOrder(replicaConfig)
 		replicas = append(replicas, int(id))
 	}
+
+	// client
+	clientConfig := fakeClientType.Config{
+		ID:     c.ID,
+		SelfC:  reqRecvC[c.ID],
+		Tools:  c.Tools,
+		Sender: c.Sender,
+		Logger: c.Logger,
+	}
+	fakeClient := forwardclient.NewClient(clientConfig)
+
+	// local order
+	localConfig := localOrderType.Config{
+		ID:      c.ID,
+		RecvC:   reqOrderC,
+		SelfC:   logRecvC[c.ID],
+		Network: c.Sender,
+		Logger:  c.Logger,
+	}
+	localOrder := localorder.NewLocalOrder(localConfig)
 
 	// filter
 	filterConfig := filterType.Config{
@@ -142,18 +153,15 @@ func newFalanxImpl(c types.Config) *falanxImpl {
 
 	falanx := &falanxImpl{
 		id:            c.ID,
-		fakeClient:    fakeClient,
+		forwardClient: fakeClient,
 		txContainer:   txContainer,
 		localOrder:    localOrder,
-		clientsOrder:  make(map[uint64]external.ModuleControl),
+		clientsOrder:  clientsOrder,
 		replicasOrder: replicasOrder,
 		txFilter:      txFilter,
 		graphEngine:   graphEngine,
-		txC:           c.TxC,
-		reqC:          c.ReqC,
 		reqRecvC:      reqRecvC,
 		reqOrderC:     reqOrderC,
-		logC:          c.LogC,
 		logRecvC:      logRecvC,
 		logOrderC:     logOrderC,
 		close:         make(chan bool),
@@ -164,14 +172,15 @@ func newFalanxImpl(c types.Config) *falanxImpl {
 }
 
 func (falanx *falanxImpl) start() {
-	go falanx.listenTransactions()
-	go falanx.listenOrderedReqs()
-	go falanx.listenOrderedLogs()
 
 	falanx.localOrder.Start()
 
 	for _, replica := range falanx.replicasOrder {
 		replica.Start()
+	}
+
+	for _, client := range falanx.clientsOrder {
+		client.Start()
 	}
 
 	falanx.txFilter.Start()
@@ -205,92 +214,40 @@ func (falanx *falanxImpl) step(msg *pb.ConsensusMessage) {
 		if err != nil {
 			return
 		}
-		falanx.fakeClient.ProposeTxs(request.Requests)
+		falanx.forwardClient.ProposeTxs(request.Requests)
 	case pb.Type_ORDERED_REQ:
+		falanx.logger.Info("[REQ] Receive an ordered request")
 		req := &pb.OrderedReq{}
 		err := proto.Unmarshal(msg.Payload, req)
 		if err != nil {
 			return
 		}
-		falanx.reqC <- req
+		falanx.processOrderedReq(req)
 	case pb.Type_ORDERED_LOG:
+		falanx.logger.Info("[LOG] Receive an ordered log")
 		log := &pb.OrderedLog{}
 		err := proto.Unmarshal(msg.Payload, log)
 		if err != nil {
 			return
 		}
-		falanx.logC <- log
+		falanx.processOrderedLog(log)
 	}
 }
 
-func (falanx *falanxImpl) listenTransactions() {
-	for {
-		select {
-		case <-falanx.close:
-			return
-
-		case tx := <-falanx.txC:
-			falanx.txContainer.Add(tx)
-		}
-	}
-}
-
-func (falanx *falanxImpl) listenOrderedReqs() {
-	for {
-		select {
-		case <-falanx.close:
-			return
-
-		case req := <-falanx.reqC:
-			falanx.processOrderedReqs(req)
-		}
-	}
-}
-
-func (falanx *falanxImpl) processOrderedReqs(req *pb.OrderedReq) {
+func (falanx *falanxImpl) processOrderedReq(req *pb.OrderedReq) {
 	falanx.logger.Debugf("Replica %d receive an ordered request from client %d", falanx.id, req.ClientId)
 	recvC, ok := falanx.reqRecvC[req.ClientId]
 	if ok {
-		falanx.logger.Debugf("Already initialize channel for client %d", req.ClientId)
-		go func() {
-			recvC <- req
-		}()
+		recvC <- req
 		return
 	}
-
-	// initialize a new client order for particular client
-	initC := make(chan *pb.OrderedReq)
-	falanx.reqRecvC[req.ClientId] = initC
-	config := clientOrderType.Config{
-		ID:     req.ClientId,
-		RecvC:  initC,
-		OrderC: falanx.reqOrderC,
-		Logger: falanx.logger,
-	}
-	client := clientsorder.NewClientOrder(config)
-	client.Start()
-	initC <- req
 }
 
-func (falanx *falanxImpl) listenOrderedLogs() {
-	for {
-		select {
-		case <-falanx.close:
-			return
-
-		case log := <-falanx.logC:
-			falanx.processOrderedLogs(log)
-		}
-	}
-}
-
-func (falanx *falanxImpl) processOrderedLogs(log *pb.OrderedLog) {
-	falanx.logger.Debugf("Replica %d receive an ordered log from replica %d", falanx.id, log.ReplicaId)
+func (falanx *falanxImpl) processOrderedLog(log *pb.OrderedLog) {
+	falanx.logger.Debugf("Replica %d receive an ordered log from replica %d, seq %d", falanx.id, log.ReplicaId, log.Sequence)
 	recvC, ok := falanx.logRecvC[log.ReplicaId]
 	if ok {
-		go func() {
-			recvC <- log
-		}()
+		recvC <- log
 		return
 	}
 

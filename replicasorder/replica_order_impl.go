@@ -78,6 +78,7 @@ func (r *replicaOrderImpl) cacheRequest(l *pb.OrderedLog) {
 		r.logger.Warningf("Duplicated log-sequence %d from replica", l.Sequence)
 		return
 	}
+	r.logger.Infof("[R-Cache] receive log from replica %d, seq %d", l.ReplicaId, l.Sequence)
 	r.cache.Push(l)
 }
 
@@ -89,14 +90,13 @@ func (r *replicaOrderImpl) orderCachedRequests() uint64 {
 	for r.recorder.Check(r.cache.Top()) {
 		l := r.cache.Pop()
 		r.recorder.Update(l)
-		r.logger.Debugf("Read log cache of replica %d, counter %d, tx %v",
-			r.id, r.recorder.Counter(), l.TxHash)
+
+		r.logger.Infof("[R-Order] post log from replica %d, seq %d", l.ReplicaId, l.Sequence)
 		r.postOrderedLogs(l)
 	}
 	return r.recorder.Counter()
 }
 
 func (r *replicaOrderImpl) postOrderedLogs(log *pb.OrderedLog) {
-	r.logger.Debugf("Post log %v from replica %d", log, log.ReplicaId)
 	r.orderC <- log
 }

@@ -40,3 +40,8 @@ type RelationCert struct {
 const (
 	DefaultGraphSize = 5
 )
+
+type PavedTxs struct {
+	Seq uint64
+	Txs map[string]bool
+}

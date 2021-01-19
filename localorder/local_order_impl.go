@@ -14,6 +14,7 @@ type localOrderImpl struct {
 	id uint64
 	seqNo uint64
 	recvC chan string
+	selfC chan *pb.OrderedLog
 	close chan bool
 	network network.Network
 	logger logger.Logger
@@ -24,6 +25,7 @@ func newLocalOrderImpl(c types.Config) *localOrderImpl {
 		id:      c.ID,
 		seqNo:   uint64(0),
 		recvC:   c.RecvC,
+		selfC:   c.SelfC,
 		network: c.Network,
 		logger:  c.Logger,
 	}
@@ -67,4 +69,9 @@ func (local *localOrderImpl) order(txHash string) {
 	}
 	local.network.Broadcast(logMsg)
 	local.logger.Noticef("Replica %d broadcast local order: seq %d, hash %s", local.id, local.seqNo, txHash)
+	local.inform(log)
+}
+
+func (local *localOrderImpl) inform(log *pb.OrderedLog) {
+	local.selfC <- log
 }

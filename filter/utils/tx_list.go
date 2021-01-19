@@ -3,7 +3,7 @@ package utils
 import (
 	"container/list"
 	"errors"
-
+	"github.com/Grivn/libfalanx/logger"
 	pb "github.com/Grivn/libfalanx/zcommon/protos"
 )
 
@@ -11,67 +11,57 @@ import (
 type TxList interface {
 	// list controller
 	Add(l *pb.OrderedLog)
-	Has(key string) bool
-	Front() *list.Element
-	Remove(e *list.Element, key string) error
 	Len() int
+	Pop() *pb.OrderedLog
 
 	// value controller
-	FrontLog() *pb.OrderedLog
-	GetLog(key string) *pb.OrderedLog
-	GetLogBySeq(seq uint64) *pb.OrderedLog
+	GetFrontLog() *pb.OrderedLog
 	GetSequence(key string) (uint64, error)
-	GetTimestamp(key string) (int64, error)
-	RemoveLog(txHash string)
+	GetByOrder(order int) *pb.OrderedLog
+	GetHashList(max int) []string
+
+	RemoveByHash(hash string)
 }
 // ====================================================================
 
-func NewTxList() *txListImpl {
-	return newTxListImpl()
+func NewTxList(logger logger.Logger) *txListImpl {
+	return newTxListImpl(logger)
 }
 
-func (list *txListImpl) Add(l *pb.OrderedLog) {
-	list.add(l)
+func (tli *txListImpl) RemoveByHash(hash string) {
+	tli.removeByHash(hash)
 }
 
-func (list *txListImpl) GetLogBySeq(seq uint64) *pb.OrderedLog {
-	return list.getLogBySeq(seq)
+func (tli *txListImpl) GetHashList(max int) []string {
+	return tli.getHashList(max)
 }
 
-func (list *txListImpl) GetLog(key string) *pb.OrderedLog {
-	return list.getLog(key)
+func (tli *txListImpl) Pop() *pb.OrderedLog {
+	e := tli.front()
+	log := e.Value.(*pb.OrderedLog)
+	delete(tli.presence, log.TxHash)
+	tli.list.Remove(e)
+	return log
 }
 
-func (list *txListImpl) GetSequence(key string) (uint64, error) {
-	return list.getSequence(key)
+func (tli *txListImpl) GetFrontLog() *pb.OrderedLog {
+	return tli.frontLog()
 }
 
-func (list *txListImpl) GetTimestamp(key string) (int64, error) {
-	return list.getTimestamp(key)
+func (tli *txListImpl) Add(l *pb.OrderedLog) {
+	tli.add(l)
 }
 
-func (list *txListImpl) Has(key string) bool {
-	return list.has(key)
+func (tli *txListImpl) GetSequence(key string) (uint64, error) {
+	return tli.getSequence(key)
 }
 
-func (list *txListImpl) Remove(e *list.Element, key string) error {
-	return list.remove(e, key)
+func (tli *txListImpl) Len() int {
+	return tli.len()
 }
 
-func (list *txListImpl) Front() *list.Element {
-	return list.front()
-}
-
-func (list *txListImpl) FrontLog() *pb.OrderedLog {
-	return list.frontLog()
-}
-
-func (list *txListImpl) Len() int {
-	return list.len()
-}
-
-func (list *txListImpl) RemoveLog(txHash string) {
-	list.removeLog(txHash)
+func (tli *txListImpl) GetByOrder(order int) *pb.OrderedLog {
+	return tli.getByOrder(order)
 }
 
 type txListImpl struct {
@@ -79,45 +69,100 @@ type txListImpl struct {
 	list *list.List
 	// presence indicates the elements in log list
 	presence map[string]*list.Element
-	// content
-	content  map[uint64]*list.Element
+
+	logger logger.Logger
 }
 
-func newTxListImpl() *txListImpl {
+func newTxListImpl(logger logger.Logger) *txListImpl {
 	return &txListImpl{
 		list:     list.New(),
 		presence: make(map[string]*list.Element),
-		content:  make(map[uint64]*list.Element),
+		logger:   logger,
 	}
 }
 
-func (list *txListImpl) add(l *pb.OrderedLog) {
-	if list.has(l.TxHash) {
+func (tli *txListImpl) getByOrder(order int) *pb.OrderedLog {
+	if tli.len() < order {
+		return nil
+	}
+
+	i := 0
+	element := tli.list.Front()
+	for {
+		if element == nil {
+			panic("nil element!")
+		}
+		i++
+		if i == order {
+			break
+		}
+		element = element.Next()
+	}
+
+	log, ok := element.Value.(*pb.OrderedLog)
+	if !ok {
+		panic("parsing error")
+	}
+
+	return log
+}
+
+func (tli *txListImpl) getHashList(max int) []string {
+	if tli.len() == 0 {
+		return nil
+	}
+
+	var (
+		next     *list.Element
+		element  *list.Element
+		hashList []string
+	)
+
+	i := 0
+	for element = tli.list.Front(); i< max; element = next {
+		if element == nil {
+			panic("nil element!")
+		}
+		log, ok := element.Value.(*pb.OrderedLog)
+		if !ok {
+			panic("parsing error")
+		}
+		hashList = append(hashList, log.TxHash)
+
+		i++
+		next = element.Next()
+	}
+
+	return hashList
+}
+
+func (tli *txListImpl) frontLog() *pb.OrderedLog {
+	e := tli.list.Front()
+	log, ok := e.Value.(*pb.OrderedLog)
+	if !ok {
+		panic("parsing error!")
+	}
+	return log
+}
+
+func (tli *txListImpl) add(l *pb.OrderedLog) {
+	if tli.has(l.TxHash) {
 		return
 	}
-	e := list.list.PushBack(l)
-	list.presence[l.TxHash] = e
-	list.content[l.Sequence] = e
+	e := tli.list.PushBack(l)
+	tli.presence[l.TxHash] = e
 }
 
-func (list *txListImpl) get(key string) *list.Element {
-	e, ok := list.presence[key]
+func (tli *txListImpl) get(key string) *list.Element {
+	e, ok := tli.presence[key]
 	if !ok {
 		return nil
 	}
 	return e
 }
 
-func (list *txListImpl) getLogBySeq(seq uint64) *pb.OrderedLog {
-	log, ok := list.content[seq]
-	if !ok {
-		return nil
-	}
-	return log.Value.(*pb.OrderedLog)
-}
-
-func (list *txListImpl) getLog(key string) *pb.OrderedLog {
-	e := list.get(key)
+func (tli *txListImpl) getLog(key string) *pb.OrderedLog {
+	e := tli.get(key)
 	if e == nil {
 		return nil
 	}
@@ -128,79 +173,46 @@ func (list *txListImpl) getLog(key string) *pb.OrderedLog {
 	return r
 }
 
-func (list *txListImpl) getSequence(key string) (uint64, error) {
-	e := list.getLog(key)
+func (tli *txListImpl) getSequence(key string) (uint64, error) {
+	e := tli.getLog(key)
 	if e == nil {
 		return 0, errors.New("nil element")
 	}
 	return e.Sequence, nil
 }
 
-func (list *txListImpl) getTimestamp(key string) (int64, error) {
-	e := list.getLog(key)
-	if e == nil {
-		return 0, errors.New("nil element")
-	}
-	return e.Timestamp, nil
-}
-
-func (list *txListImpl) has(key string) bool {
-	_, ok := list.presence[key]
+func (tli *txListImpl) has(key string) bool {
+	_, ok := tli.presence[key]
 	return ok
 }
 
-func (list *txListImpl) remove(e *list.Element, key string) error {
-	if e == nil {
-		return errors.New("nil element")
-	}
-	if !list.has(key) {
-		return errors.New("non-exited element")
-	}
-	if list.get(key) != e {
-		return errors.New("unpaired element")
-	}
-	list.list.Remove(e)
-	delete(list.presence, key)
-	delete(list.content, e.Value.(*pb.OrderedLog).Sequence)
-	return nil
+func (tli *txListImpl) front() *list.Element {
+	return tli.list.Front()
 }
 
-func (list *txListImpl) frontLog() *pb.OrderedLog {
-	log, ok := list.front().Value.(*pb.OrderedLog)
-	if !ok {
+func (tli *txListImpl) pushBack(key string, value interface{}) *list.Element {
+	if tli.has(key) {
 		return nil
 	}
-	return log
-}
-
-func (list *txListImpl) front() *list.Element {
-	return list.list.Front()
-}
-
-func (list *txListImpl) pushBack(key string, value interface{}) *list.Element {
-	if list.has(key) {
-		return nil
-	}
-	e := list.list.PushBack(value)
-	list.presence[key] = e
+	e := tli.list.PushBack(value)
+	tli.presence[key] = e
 	return e
 }
 
-func (list *txListImpl) len() int {
-	if list.presence == nil {
-		return 0
-	}
-	return len(list.presence)
+func (tli *txListImpl) len() int {
+	return tli.list.Len()
 }
 
-func (list *txListImpl) removeLog(txHash string) {
-	if !list.has(txHash) {
+func (tli *txListImpl) removeByHash(hash string) {
+	e := tli.presence[hash]
+	if e == nil {
 		return
 	}
-	e := list.get(txHash)
-	err := list.remove(e, txHash)
-	if err != nil {
-		panic(err)
-		return
+	v := tli.list.Remove(e)
+	if v == nil {
+		panic("nil value!")
 	}
+	log := v.(*pb.OrderedLog)
+	tli.logger.Infof("[LIST] remove, (%d, %d)", log.ReplicaId, log.Sequence)
+	delete(tli.presence, hash)
 }
