@@ -1,11 +1,9 @@
 package network
 
 import (
-	baTypes "github.com/Grivn/libfalanx/localba/types"
-	seqTypes "github.com/Grivn/libfalanx/sequencepool/types"
+	pb "github.com/Grivn/libfalanx/zcommon/protos"
 )
 
 type Network interface {
-	BroadcastSequenceLog(log seqTypes.SequenceLog)
-	BroadcastSuspectMalice(sus baTypes.SuspectMalice)
+	Broadcast(msg *pb.ConsensusMessage)
 }

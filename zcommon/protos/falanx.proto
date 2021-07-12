@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package falanxpb;
+
+enum Type {
+  REQUEST_SET = 0;
+  ORDERED_REQ = 1;
+  ORDERED_LOG = 2;
+}
+
+message consensus_message {
+  Type type = 1;
+  bytes payload = 2;
+}
+
+message Transaction {
+  bytes payload = 1;
+}
+
+message request_set {
+  repeated Transaction requests = 1;
+}
+
+message ordered_log {
+  uint64 replica_id = 1;
+  uint64 sequence = 2;
+  string tx_hash = 3;
+  int64 timestamp = 4;
+}
+
+message ordered_req {
+  uint64 client_id = 1;
+  uint64 sequence = 2;
+  repeated string tx_hash_list = 3;
+  int64 timestamp = 4;
+}
+
+message suspect {
+  uint64 replica_id = 1;
+  uint64 malice_id = 2;
+}
+
+message reply {
+  uint64 replica_id = 1;
+  uint64 client_id = 2;
+  string tx_hash = 3;
+  bytes result = 4;
+}

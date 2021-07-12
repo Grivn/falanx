@@ -6,37 +6,25 @@
         <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
         <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
       </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:demo" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
     </expand>
-    <select />
+    <select>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:demo" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:demo/refactor" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </select>
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8076577a-4287-45be-8e84-c500e465776e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dagmanager/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dagmanager/interface.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dagmanager/types/types.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/executor/interface.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/external/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/external/interface.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/graphengine/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/graphengine/interface.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/graphengine/types/types.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/kernel/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/kernel/interface.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/localba/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/localba/interface.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/localba/types/types.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/network/interface.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/network/types/types.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/interface.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sequencepool/types/types.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/statusmanager/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/statusmanager/interface.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/storage/interface.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,29 +38,53 @@
       </list>
     </option>
   </component>
-  <component name="GOROOT" path="/usr/local/go" />
+  <component name="GOROOT" url="file://$USER_HOME$/.gvm/gos/go1.13" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="hiddenUrls">
+      <set>
+        <option value="https://github.com/Grivn/libfalanx" />
+      </set>
+    </option>
+  </component>
   <component name="ProjectId" id="1m5hLbhpMSW7XAd62NFyAUPU1fX" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="go.vgo" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../go-practice" />
+    <property name="settings.editor.selected.configurable" value="reference.settings.project.statistic.project.settings" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/filter" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/kernel" />
-      <recent name="$PROJECT_DIR$/graphengine/types" />
-      <recent name="$PROJECT_DIR$/graphengine" />
+      <recent name="$PROJECT_DIR$/api" />
+      <recent name="$PROJECT_DIR$/falanx/external" />
+      <recent name="$PROJECT_DIR$/filter" />
+      <recent name="$PROJECT_DIR$/clients_order" />
+      <recent name="$PROJECT_DIR$/replicas_order" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -84,12 +96,27 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="demo/refactor" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -102,23 +129,5 @@
         <entry key="GOSUMDB" value="sum.golang.org" />
       </map>
     </environment>
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1608813354528">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1608813354528" />
-    <state x="398" y="259" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1608874034490">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="398" y="259" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1440.900@0.0.1440.900" timestamp="1608874034490" />
-    <state x="619" y="319" key="EnvironmentVariablesDialog" timestamp="1608790432073">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="619" y="319" key="EnvironmentVariablesDialog/0.0.1440.900@0.0.1440.900" timestamp="1608790432073" />
-    <state x="221" y="89" key="SettingsEditor" timestamp="1608790432517">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="221" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1608790432517" />
   </component>
 </project>
