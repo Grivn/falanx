@@ -24,7 +24,7 @@
   <component name="ChangeListManager">
     <list default="true" id="8076577a-4287-45be-8e84-c500e465776e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/falanx/falanx_impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/falanx/falanx_impl.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zcommon/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/zcommon/utils.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,9 +38,17 @@
       </list>
     </option>
   </component>
-  <component name="GOROOT" path="/usr/local/go" />
+  <component name="GOROOT" url="file://$USER_HOME$/.gvm/gos/go1.13" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="GithubPullRequestsUISettings">
     <option name="hiddenUrls">
@@ -68,15 +76,15 @@
     <property name="settings.editor.selected.configurable" value="reference.settings.project.statistic.project.settings" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/filter" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/api" />
       <recent name="$PROJECT_DIR$/falanx/external" />
       <recent name="$PROJECT_DIR$/filter" />
       <recent name="$PROJECT_DIR$/clients_order" />
       <recent name="$PROJECT_DIR$/replicas_order" />
-      <recent name="$PROJECT_DIR$/replicas_order/utils" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/filter" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -121,47 +129,5 @@
         <entry key="GOSUMDB" value="sum.golang.org" />
       </map>
     </environment>
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="320" y="98" key="#Plugins" timestamp="1611043352081">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="320" y="98" key="#Plugins/0.0.1440.900@0.0.1440.900" timestamp="1611043352081" />
-    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1608813354528">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1608813354528" />
-    <state x="398" y="259" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1608874034490">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="398" y="259" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1440.900@0.0.1440.900" timestamp="1608874034490" />
-    <state x="408" y="193" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1610876762626">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="408" y="193" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1440.900@0.0.1440.900" timestamp="1610876762626" />
-    <state x="100" y="100" width="1240" height="700" key="DiffContextDialog" timestamp="1610695104197">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="100" y="100" width="1240" height="700" key="DiffContextDialog/0.0.1440.900@0.0.1440.900" timestamp="1610695104197" />
-    <state x="619" y="319" key="EnvironmentVariablesDialog" timestamp="1608885691057">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="619" y="319" key="EnvironmentVariablesDialog/0.0.1440.900@0.0.1440.900" timestamp="1608885691057" />
-    <state x="488" y="159" key="RollbackChangesDialog" timestamp="1610595603517">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="488" y="159" key="RollbackChangesDialog/0.0.1440.900@0.0.1440.900" timestamp="1610595603517" />
-    <state x="221" y="89" key="SettingsEditor" timestamp="1611043767847">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="221" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1611043767847" />
-    <state x="100" y="100" width="1240" height="700" key="ShowDiffWithBranchDialog" timestamp="1610695104199">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="100" y="100" width="1240" height="700" key="ShowDiffWithBranchDialog/0.0.1440.900@0.0.1440.900" timestamp="1610695104199" />
-    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1611043316735">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1611043316735" />
   </component>
 </project>

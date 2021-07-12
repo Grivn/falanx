@@ -2,14 +2,13 @@ package forwardclient
 
 import (
 	"github.com/Grivn/libfalanx/forwardclient/types"
-
-	fCommonProto "github.com/ultramesh/flato-common/types/protos"
+	pb "github.com/Grivn/libfalanx/zcommon/protos"
 )
 
 func NewClient(c types.Config) *clientImpl {
 	return newClientImpl(c)
 }
 
-func (c *clientImpl) ProposeTxs(txs []*fCommonProto.Transaction) {
+func (c *clientImpl) ProposeTxs(txs []*pb.Transaction) {
 	c.propose(txs)
 }

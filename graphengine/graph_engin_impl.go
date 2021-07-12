@@ -62,9 +62,9 @@ func (g *graphEngineImpl) listenEvent() {
 func (g *graphEngineImpl) printGraph(graph map[string][]string) {
 	for from := range graph {
 		toList := graph[from]
-		g.logger.Noticef("%s out degree is %d", from, len(toList))
+		g.logger.Infof("%s out degree is %d", from, len(toList))
 		for to := range toList {
-			g.logger.Noticef("    ===> %s", to)
+			g.logger.Infof("    ===> %s", to)
 		}
 	}
 }

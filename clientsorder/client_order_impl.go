@@ -28,7 +28,7 @@ type clientOrderImpl struct {
 }
 
 func newClientOrderImpl(c types.Config) *clientOrderImpl {
-	c.Logger.Noticef("Initialize client order instance: [id]%d", c.ID)
+	c.Logger.Infof("Initialize client order instance: [id]%d", c.ID)
 	return &clientOrderImpl{
 		id:       c.ID,
 		cache:    utils.NewReqCache(),
@@ -101,7 +101,7 @@ func (c *clientOrderImpl) orderCachedRequests() uint64 {
 
 func (c *clientOrderImpl) postOrderedTxs(list []string) {
 	for _, txHash := range list {
-		c.logger.Noticef("Post request %s from client %d", txHash, c.id)
+		c.logger.Infof("Post request %s from client %d", txHash, c.id)
 		c.postTx(txHash)
 	}
 }

@@ -1,9 +1,9 @@
 package falanx
 
 import (
+	"github.com/Grivn/libfalanx/api"
 	"github.com/Grivn/libfalanx/clientsorder"
 	clientOrderType "github.com/Grivn/libfalanx/clientsorder/types"
-	"github.com/Grivn/libfalanx/falanx/external"
 	"github.com/Grivn/libfalanx/filter"
 	filterType "github.com/Grivn/libfalanx/filter/types"
 	"github.com/Grivn/libfalanx/forwardclient"
@@ -18,8 +18,7 @@ import (
 	containerType "github.com/Grivn/libfalanx/txcontainer/types"
 	pb "github.com/Grivn/libfalanx/zcommon/protos"
 	"github.com/Grivn/libfalanx/zcommon/types"
-
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 )
 
 type falanxImpl struct {
@@ -35,13 +34,13 @@ type falanxImpl struct {
 	// replicasOrder: used to process the ordered logs from replicas
 	// txFilter:      used to generate graph
 	// graphEngine:   used to deal with the raw graph
-	forwardClient external.ForwardClient
-	txContainer   external.TxsContainer
-	localOrder    external.ModuleControl
-	clientsOrder  map[uint64]external.ModuleControl
-	replicasOrder map[uint64]external.ModuleControl
-	txFilter      external.ModuleControl
-	graphEngine   external.ModuleControl
+	forwardClient api.ForwardClient
+	txContainer   api.TxsContainer
+	localOrder    api.ModuleControl
+	clientsOrder  map[uint64]api.ModuleControl
+	replicasOrder map[uint64]api.ModuleControl
+	txFilter      api.ModuleControl
+	graphEngine   api.ModuleControl
 
 	// channel =======================================================================================
 	// the channels which will be used to deliver messages between different modules
@@ -88,7 +87,7 @@ func newFalanxImpl(c types.Config) *falanxImpl {
 	txContainer := txcontainer.NewTxContainer(containerConfig)
 
 	// initialize the client order
-	clientsOrder := make(map[uint64]external.ModuleControl)
+	clientsOrder := make(map[uint64]api.ModuleControl)
 	for i:=0; i<c.N; i++ {
 		id := uint64(i+1)
 		recvC := make(chan *pb.OrderedReq, types.DefaultChannelLen)
@@ -104,7 +103,7 @@ func newFalanxImpl(c types.Config) *falanxImpl {
 
 	// initialize the replica order
 	var replicas []int
-	replicasOrder := make(map[uint64]external.ModuleControl)
+	replicasOrder := make(map[uint64]api.ModuleControl)
 	for i:=0; i<c.N; i++ {
 		id := uint64(i+1)
 		recvC := make(chan *pb.OrderedLog, types.DefaultChannelLen)
@@ -187,7 +186,7 @@ func (falanx *falanxImpl) start() {
 
 	falanx.graphEngine.Start()
 
-	falanx.logger.Notice(`
+	falanx.logger.Info(`
 
 +=============================================================================+
 ｜                                                                           ｜

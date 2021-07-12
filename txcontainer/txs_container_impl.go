@@ -2,24 +2,23 @@ package txcontainer
 
 import (
 	"errors"
+	pb "github.com/Grivn/libfalanx/zcommon/protos"
 
 	"github.com/Grivn/libfalanx/logger"
 	"github.com/Grivn/libfalanx/zcommon"
-
-	fCommonProto "github.com/ultramesh/flato-common/types/protos"
 )
 
 // Implementation ==================================================
 type containerImpl struct {
 	// pendingTxs means the transactions which have not been executed
-	pendingTxs map[string]*fCommonProto.Transaction
+	pendingTxs map[string]*pb.Transaction
 
 	// essential external tools for txPool
 	tools  zcommon.Tools
 	logger logger.Logger
 }
 
-func (c *containerImpl) add(tx *fCommonProto.Transaction) {
+func (c *containerImpl) add(tx *pb.Transaction) {
 	if tx == nil {
 		c.logger.Warning("container received a nil transaction")
 		return
@@ -33,7 +32,7 @@ func (c *containerImpl) has(txHash string) bool {
 	return ok
 }
 
-func (c *containerImpl) get(txHash string) *fCommonProto.Transaction {
+func (c *containerImpl) get(txHash string) *pb.Transaction {
 	if !c.has(txHash) {
 		c.logger.Debugf("Replica %d cannot find such a transaction %d", txHash)
 		return nil

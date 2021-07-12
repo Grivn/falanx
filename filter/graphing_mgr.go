@@ -138,21 +138,21 @@ func (g *graphingMgr) relateTxs() {
 		}
 		switch g.check(self, other) {
 		case types.FormerPriority:
-			g.logger.Noticef("%s ===> %s", self, other)
+			g.logger.Infof("%s ===> %s", self, other)
 			cert := g.getRelationCert(other, self)
 			if !cert.Finished {
 				cert.Finished = true
 				cert.Status = types.LatterPriority
 			}
 		case types.LatterPriority:
-			g.logger.Noticef("%s ===> %s", other, self)
+			g.logger.Infof("%s ===> %s", other, self)
 			cert := g.getRelationCert(other, self)
 			if !cert.Finished {
 				cert.Finished = true
 				cert.Status = types.FormerPriority
 			}
 		case types.NotEfficient:
-			g.logger.Noticef("cannot compare %s and %s", self, other)
+			g.logger.Infof("cannot compare %s and %s", self, other)
 			finished = false
 		}
 	}
@@ -237,7 +237,7 @@ func (g *graphingMgr) generateRawGraph() {
 	}
 
 	graph := make(map[string][]string)
-	g.logger.Noticef("Trying to generate graph")
+	g.logger.Infof("Trying to generate graph")
 
 	for idr, cert := range g.certStore {
 		if cert.Status == types.FormerPriority {
@@ -255,15 +255,15 @@ func (g *graphingMgr) generateRawGraph() {
 func (g *graphingMgr) printGraph(graph map[string][]string) {
 	for from := range graph {
 		toList := graph[from]
-		g.logger.Noticef("%s out degree is %d", from, len(toList))
+		g.logger.Infof("%s out degree is %d", from, len(toList))
 		for _, to := range toList {
-			g.logger.Noticef("    ===> %s", to)
+			g.logger.Infof("    ===> %s", to)
 		}
 	}
 }
 
 func (g *graphingMgr) finish() {
-	g.logger.Noticef("============================ Call execute %d ============================", g.preferSeq-1)
+	g.logger.Infof("============================ Call execute %d ============================", g.preferSeq-1)
 	for _, txHash := range g.finished {
 		g.logger.Infof("[EXEC] %s", txHash)
 		g.executed[txHash] = true
@@ -276,7 +276,7 @@ func (g *graphingMgr) finish() {
 }
 
 func (g *graphingMgr) inform() {
-	g.logger.Noticef("[GRAPH] post finished event")
+	g.logger.Infof("[GRAPH] post finished event")
 	g.finishC <- g.finished
 }
 

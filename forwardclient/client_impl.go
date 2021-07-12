@@ -10,7 +10,6 @@ import (
 	pb "github.com/Grivn/libfalanx/zcommon/protos"
 
 	"github.com/golang/protobuf/proto"
-	fCommonProto "github.com/ultramesh/flato-common/types/protos"
 )
 
 type clientImpl struct {
@@ -18,7 +17,7 @@ type clientImpl struct {
 	n  uint64
 	f  uint64
 
-	txs map[string]*fCommonProto.Transaction
+	txs map[string]*pb.Transaction
 	seq uint64
 
 	res map[string]map[uint64]bool
@@ -33,7 +32,7 @@ type clientImpl struct {
 func newClientImpl(config types.Config) *clientImpl {
 	return &clientImpl{
 		id:     config.ID,
-		txs:    make(map[string]*fCommonProto.Transaction),
+		txs:    make(map[string]*pb.Transaction),
 		seq:    uint64(0),
 		selfC:  config.SelfC,
 		tools:  config.Tools,
@@ -42,7 +41,7 @@ func newClientImpl(config types.Config) *clientImpl {
 	}
 }
 
-func (c *clientImpl) propose(txs []*fCommonProto.Transaction) {
+func (c *clientImpl) propose(txs []*pb.Transaction) {
 	hashList := make([]string, len(txs))
 	for index, tx := range txs {
 		hash := c.tools.TransactionHash(tx)

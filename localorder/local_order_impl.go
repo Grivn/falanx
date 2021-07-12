@@ -68,7 +68,7 @@ func (local *localOrderImpl) order(txHash string) {
 		Payload: logPayload,
 	}
 	local.network.Broadcast(logMsg)
-	local.logger.Noticef("Replica %d broadcast local order: seq %d, hash %s", local.id, local.seqNo, txHash)
+	local.logger.Infof("Replica %d broadcast local order: seq %d, hash %s", local.id, local.seqNo, txHash)
 	local.inform(log)
 }
 

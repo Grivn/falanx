@@ -114,7 +114,7 @@ func (p *pavingMgr) scanner() {
 			if round > p.round {
 				p.round = round
 			}
-			p.logger.Noticef("[PAVE] not efficient txs, len %d, round %d", len(p.pavedTxs), p.round)
+			p.logger.Infof("[PAVE] not efficient txs, len %d, round %d", len(p.pavedTxs), p.round)
 			return
 		}
 		p.pavedTxs[log.TxHash] = true

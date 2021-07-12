@@ -1,6 +1,6 @@
-package external
+package api
 
-import fCommonProto "github.com/ultramesh/flato-common/types/protos"
+import pb "github.com/Grivn/libfalanx/zcommon/protos"
 
 type ModuleControl interface {
 	Start()
@@ -11,11 +11,11 @@ type ModuleControl interface {
 // we don't need to maintain the order here and it is only a container for transactions
 // no duplicated transactions
 type TxsContainer interface {
-	Add(tx *fCommonProto.Transaction)
-	Get(txHash string) *fCommonProto.Transaction
+	Add(tx *pb.Transaction)
+	Get(txHash string) *pb.Transaction
 	Remove(txHash string) error
 }
 
 type ForwardClient interface {
-	ProposeTxs(txs []*fCommonProto.Transaction)
+	ProposeTxs(txs []*pb.Transaction)
 }

@@ -1,14 +1,14 @@
 package filter
 
 import (
-	"github.com/Grivn/libfalanx/filter/types"
-	tp "github.com/Grivn/libfalanx/zcommon/types"
 	"math"
 	"time"
 
+	"github.com/Grivn/libfalanx/filter/types"
 	"github.com/Grivn/libfalanx/filter/utils"
 	"github.com/Grivn/libfalanx/logger"
 	pb "github.com/Grivn/libfalanx/zcommon/protos"
+	tp "github.com/Grivn/libfalanx/zcommon/types"
 )
 
 type transactionsFilterImpl struct {
